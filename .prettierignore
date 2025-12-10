@@ -1,0 +1,32 @@
+// .eslintignore 
+
+node_modules/
+
+# 정적 자산 
+public/
+
+# 빌드 결과물
+.next/
+
+# 번들/배포용 폴더 
+dist/
+build/
+out/
+
+# 배포 플랫폼
+
+# 패키지 매니저 잠금 파일
+package-lock.json
+yarn.lock
+
+# 환경 설정 파일
+*.config.js
+
+# 자동 생성된 코드
+generated/
+
+# 테스트 커버리지
+coverage/
+
+# 환경변수 
+.env

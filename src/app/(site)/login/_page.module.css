@@ -1,0 +1,222 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #090014;
+  color: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 뒷배경: 그라데이션 + 별 반짝 */
+.bgGradient {
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 10% 0%, #ff9af5 0, transparent 55%),
+    radial-gradient(circle at 90% 100%, #7cf2ff 0, transparent 60%),
+    radial-gradient(circle at 50% 50%, #2c1c5a 0, #090014 55%);
+  opacity: 0.9;
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.bgStars {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#ffffff80 1px, transparent 1px);
+  background-size: 6px 6px;
+  opacity: 0.15;
+  mix-blend-mode: screen;
+  z-index: 0;
+}
+
+/* 올드웹 창 프레임 */
+.frame {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 92vw);
+  border-radius: 18px;
+  border: 3px solid #ffd6ff;
+  box-shadow:
+    0 0 0 2px #ff8dfc,
+    0 12px 0 0 #24063c,
+    0 18px 40px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, #4e0a88 0%, #120024 60%, #1b0046 100%);
+  overflow: hidden;
+}
+
+/* 상단 바 */
+.frameHeader {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: linear-gradient(90deg, #ffb4f0, #ffe17c);
+  border-bottom: 2px solid #2e043f;
+  gap: 6px;
+}
+
+.dotPink,
+.dotYellow,
+.dotGreen {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid #00000060;
+}
+
+.dotPink {
+  background: #ff5fa2;
+}
+
+.dotYellow {
+  background: #ffe764;
+}
+
+.dotGreen {
+  background: #87ff9e;
+}
+
+.title {
+  margin-left: 6px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #4b0064;
+}
+
+/* 내용 영역 */
+.frameBody {
+  padding: 26px 22px 20px;
+  text-align: center;
+}
+
+.logo {
+  font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+  font-size: 26px;
+  text-shadow:
+    0 0 6px #ff8dfc,
+    0 0 18px #ffeb9d;
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+}
+
+.subcopy {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #ffe6ff;
+  margin-bottom: 18px;
+}
+
+.highlight {
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fff0a8, #ffc2f1);
+  color: #4e0073;
+  box-shadow: 0 0 0 1px #ffeac4;
+}
+
+/* Google 버튼: 크롬 느낌 + Y2K */
+.googleButton {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f2f2ff 55%, #e3e6ff 100%);
+  box-shadow:
+    0 3px 0 #1b1633,
+    0 0 0 1px #c1c5ff,
+    0 0 20px rgba(255, 255, 255, 0.3);
+  color: #1c1538;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.08s ease-out,
+    filter 0.08s ease-out;
+}
+
+.googleButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+  filter: grayscale(0.2);
+}
+
+.googleButton:not(:disabled):hover {
+  transform: translateY(1px);
+  box-shadow:
+    0 1px 0 #1b1633,
+    0 0 0 1px #c1c5ff,
+    0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: conic-gradient(
+    from 45deg,
+    #4285f4,
+    #34a853,
+    #fbbc05,
+    #ea4335,
+    #4285f4
+  );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* 에러 / 안내 */
+.error {
+  color: #ffd2d2;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.notice {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #f7e7ff;
+}
+
+.link {
+  color: #ffe17c;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  text-decoration-style: solid;
+}
+
+/* 하단 작은 텍스트 */
+.footerNote {
+  margin-top: 14px;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #c9b7ff;
+  opacity: 0.9;
+}
