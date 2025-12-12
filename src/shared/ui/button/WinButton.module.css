@@ -1,0 +1,32 @@
+.winButton {
+  min-width: 70px;
+  padding: 2px 12px;
+  border: 2px outset #ffffff;
+  background: #e1e1e1;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.winButton:active {
+  border-style: inset;
+  box-shadow: 0 0 0 #000;
+}
+
+.winButtonPrimary {
+  background: #ffffff;
+  font-weight: bold;
+}
+
+.winButtonFlat {
+  border: 1px solid #000;
+  box-shadow: none;
+}
+
+/* 예: 오른쪽 정렬 버튼 그룹이 필요할 때 */
+.winButtonRow {
+  margin-top: 12px;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}

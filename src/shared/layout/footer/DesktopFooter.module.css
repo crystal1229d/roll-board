@@ -1,0 +1,19 @@
+.footerLinks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 11px;
+  font-family: 'MS Sans Serif';
+  color: #000;
+}
+
+.footerLinks a {
+  color: #000;
+  text-decoration: none;
+  border-bottom: 1px dotted #000;
+}
+
+.footerLinks a:hover {
+  text-decoration: underline;
+}

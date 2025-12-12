@@ -1,0 +1,14 @@
+.window {
+  position: absolute;
+}
+
+/* 우하단 리사이즈 핸들 */
+.resizeHandle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  right: 2px;
+  bottom: 2px;
+  cursor: se-resize;
+  background: transparent;
+}

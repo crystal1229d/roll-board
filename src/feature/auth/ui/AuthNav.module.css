@@ -1,0 +1,84 @@
+.authNav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+}
+
+.avatar {
+  border-radius: 999px;
+  border: 1px solid rgba(75, 85, 99, 0.9);
+}
+
+.email {
+  font-size: 11px;
+  color: #e5e7eb;
+  max-width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logoutButton {
+  border: none;
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.logoutButton:hover {
+  text-decoration: underline;
+}
+
+/* 로그인 버튼 */
+
+.loginButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(75, 85, 99, 0.9);
+  padding: 4px 10px;
+  background: #e5e7eb;
+  color: #020617;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.loginButton:hover {
+  filter: brightness(0.96);
+}
+
+.loginIconOuter {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginIconInner {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: conic-gradient(
+    from 0deg,
+    #4285f4,
+    #ea4335,
+    #fbbc05,
+    #34a853,
+    #4285f4
+  );
+}
+
+.loginText {
+  white-space: nowrap;
+}

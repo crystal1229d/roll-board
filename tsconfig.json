@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/app/(site)/privacy/page.tsx", "src/app/(site)/terms/page.tsx"  ],
   "exclude": ["node_modules"]
 }

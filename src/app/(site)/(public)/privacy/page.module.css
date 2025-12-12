@@ -1,0 +1,33 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.container h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.container h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+
+.container p {
+  margin-bottom: 12px;
+}
+
+.container ul {
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+
+.container li {
+  margin-bottom: 6px;
+}

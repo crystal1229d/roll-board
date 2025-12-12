@@ -1,0 +1,40 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  z-index: 50;
+}
+
+.inner {
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.links {
+  display: flex;
+  gap: 12px;
+}
+
+.links a {
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.links a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .inner {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+}

@@ -22,7 +22,6 @@
   --text: #f1f5f9;
   color-scheme: dark; /* native UI 요소도 dark 스타일 사용 */
 }
-
 /* ============================= */
 /*  Base Styles                  */
 /* ============================= */
@@ -35,7 +34,8 @@ body {
 body {
   color: var(--text);
   background: var(--bg);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: 'MS Sans Serif', 'Verdana', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

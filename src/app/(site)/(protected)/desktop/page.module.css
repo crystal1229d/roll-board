@@ -1,0 +1,57 @@
+.desktop {
+  min-height: 100vh;
+  padding: 18px;
+  /* 윈도우 98 느낌 + 키치 파스텔 구름/무지개 느낌 */
+  background:
+    linear-gradient(135deg, #007c80, #004f78);
+  background-attachment: fixed;
+  font-family: 'MS Sans Serif', Tahoma, Verdana, sans-serif;
+}
+
+/* 아이콘을 실제 바탕화면처럼 왼쪽 위에 세로 그리드로 */
+.iconGrid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: 90px 90px 90px 90px 90px;
+  grid-auto-columns: 90px;
+  gap: 18px;
+}
+
+.icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 11px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+/* 선택 느낌 */
+.icon:focus-visible,
+.icon:hover {
+  outline: none;
+}
+
+.icon:hover .iconImage {
+  transform: scale(1.05);
+}
+
+.iconImage {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.iconLabel {
+  text-shadow: 1px 1px 0 #000000;
+  text-align: center;
+  line-height: 1.2;
+}
