@@ -107,7 +107,6 @@
 
 /* ── 본문 ─────────────────────────────────────────── */
 .body {
-  padding: 16px;
   text-align: center;
   font-family: "Comic Sans MS", "Comic Sans", cursive;
   flex: 1;

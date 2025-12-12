@@ -1,0 +1,318 @@
+/* src/widget/paper/MyPaperSettingsWindow.module.css */
+
+.page {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f9e6ff,
+    #f9e6ff 6px,
+    #fdf7ff 6px,
+    #fdf7ff 12px
+  );
+  font-family: 'Verdana', 'Tahoma', sans-serif;
+  font-size: 12px;
+  color: #222;
+  overflow: auto;
+}
+
+.shell {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 #b374ff;
+}
+
+.headerBar {
+  padding: 6px 10px;
+  background: linear-gradient(90deg, #7ad9ff, #c9f0ff);
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.body {
+  padding: 10px;
+  background: #fffdf8;
+}
+
+.row {
+  margin-bottom: 8px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.field span {
+  font-weight: bold;
+}
+
+.field input,
+.field select {
+  border: 1px solid #000;
+  padding: 4px;
+  font-size: 11px;
+  background: #fffdf8;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.saveBtn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border: 2px solid #000;
+  background: linear-gradient(180deg, #ffeafc, #ffb7f5 50%, #ffdffb 100%);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 #b374ff;
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #8b52d1;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.errorText {
+  margin: 4px 0;
+  color: #d9204c;
+  font-weight: bold;
+}
+
+.stickerBox {
+  margin-top: 8px;
+  padding: 8px;
+  border: 2px dashed #000;
+  background: #fff;
+  font-size: 11px;
+}
+
+.stickerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.resetStickerBtn {
+  padding: 2px 8px;
+  border: 2px solid #000;
+  background: #ffe6e6;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.stickerInfo {
+  font-size: 10px;
+  color: #555;
+}
+
+
+/* 팔레트 영역 */
+.textureSection {
+  margin-top: 6px;
+  padding: 6px;
+  border: 1px dashed #aaa;
+  background: #fffdf8;
+  font-size: 11px;
+}
+
+.texturePreviewLabel {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* 코르크 게시판 형태 미리보기 */.texturePreviewBoard {
+  width: 100%;
+  max-width: 260px;
+  height: 120px;
+  margin-bottom: 8px;
+  /* 배경은 PaperBoard에서 처리하니까 굳이 안 넣어도 됨 */
+}
+
+/* 안의 노트 종이 */
+.texturePreviewPaper {
+  width: 70%;
+  height: 60%;
+  background: #fffdfa;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #d9cbb8;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 코르크 배경 */
+.textureBoard_cork {
+  background-color: #e3c49b;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.23) 0, transparent 40%),
+    radial-gradient(circle at 70% 80%, rgba(116, 76, 35, 0.35) 0, transparent 50%),
+    radial-gradient(circle at 30% 60%, rgba(160, 110, 60, 0.3) 0, transparent 45%);
+  background-size: 180px 180px;
+}
+
+/* 단색/패턴별 보드는 실제로도 같은 클래스를 재사용할 수 있게 구성 */
+.textureBoard_solidCream {
+  background: #fff6e0;
+}
+
+.textureBoard_solidPink {
+  background: #ffe1f0;
+}
+
+.textureBoard_solidBlue {
+  background: #e0f0ff;
+}
+
+.textureBoard_gridPink {
+  background-color: #fff7fb;
+  background-image:
+    linear-gradient(#ffc1e3 1px, transparent 1px),
+    linear-gradient(90deg, #ffc1e3 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.textureBoard_linedBlue {
+  background-color: #fbfdff;
+  background-image: linear-gradient(#b6cfff 1px, transparent 1px);
+  background-size: 100% 18px;
+}
+
+.textureBoard_starNavy {
+  background-color: #081526;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+  background-size: 40px 40px, 24px 24px;
+  background-position: 0 0, 12px 8px;
+}
+
+/* 미리보기 안의 노트 종이 */
+.texturePreviewPaper {
+  width: 70%;
+  height: 60%;
+  background: #fffdfa;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  border: 1px solid #d9cbb8;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 팔레트 grid */
+.textureGroupTitle {
+  margin-top: 4px;
+  margin-bottom: 2px;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.textureGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.textureItem {
+  width: 72px;
+  height: 56px;
+  border-radius: 4px;
+  border: 2px solid #000;
+  padding: 2px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.textureItemActive {
+  box-shadow: 0 0 0 2px #ff4db8;
+}
+
+/* 각 카드 배경 (미니버전) */
+.texture_cork {
+  background-color: #e3c49b;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.25) 0, transparent 40%),
+    radial-gradient(circle, rgba(116, 76, 35, 0.3) 0, transparent 50%);
+  background-size: 40px 40px, 26px 26px;
+}
+
+.texture_solidCream {
+  background: #fff6e0;
+}
+
+.texture_solidPink {
+  background: #ffe1f0;
+}
+
+.texture_solidBlue {
+  background: #e0f0ff;
+}
+
+.texture_gridPink {
+  background-color: #fff7fb;
+  background-image:
+    linear-gradient(#ffc1e3 1px, transparent 1px),
+    linear-gradient(90deg, #ffc1e3 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.texture_linedBlue {
+  background-color: #fbfdff;
+  background-image: linear-gradient(#b6cfff 1px, transparent 1px);
+  background-size: 100% 10px;
+}
+
+.texture_starNavy {
+  background-color: #081526;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+  background-size: 14px 14px, 8px 8px;
+  background-position: 0 0, 4px 2px;
+}
+
+.textureLabel {
+  font-size: 9px;
+  font-weight: bold;
+  text-shadow: 0 1px 0 #fff;
+}

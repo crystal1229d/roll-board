@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
-import { createSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
+import { getSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
 import { useUserStore } from '@/entity/user/model/user.store';
 
 export function useAuth() {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
+  const supabase = getSupabaseBrowserClient();
   const { setUserId, clearUser } = useUserStore();
 
   const [user, setUser] = useState<User | null>(null);

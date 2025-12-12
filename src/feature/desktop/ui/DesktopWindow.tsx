@@ -93,7 +93,7 @@ export default function DesktopWindow({ win, children }: Props) {
   const windowStyle = win.maximized
     ? {
         left: 20,
-        top: 20,
+        top: 10,
         width: 'calc(100vw - 40px)',
         height: 'calc(100vh - 60px)',
       }

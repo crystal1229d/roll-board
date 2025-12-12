@@ -1,5 +1,5 @@
-import BoardWidget from '@/widget/board/Boardwindow';
+import PaperWindow from '@/widget/paper/PaperWindow';
 
 export default function BoardPage() {
-  return <BoardWidget />;
+  return <PaperWindow />;
 }

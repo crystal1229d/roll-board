@@ -1,7 +1,7 @@
 'use client';
 
 import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
-import { DesktopAppId, DESKTOP_APPS } from '@/feature/desktop/config/app';
+import { DESKTOP_APPS } from '@/feature/desktop/config/app';
 import styles from './page.module.css';
 
 export default function MainDesktopPage() {

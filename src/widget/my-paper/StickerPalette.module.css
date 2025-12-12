@@ -1,0 +1,41 @@
+/* StickerPalette.module.css */
+.wrapper {
+  margin-top: 10px;
+  padding: 8px;
+  border: 2px solid #000;
+  background: #fffdf8;
+}
+
+.title {
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.item {
+  width: 70px;
+  height: 80px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.item img {
+  max-width: 40px;
+  max-height: 40px;
+  margin-bottom: 2px;
+}
+
+.item span {
+  font-size: 9px;
+}

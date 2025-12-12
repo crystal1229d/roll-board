@@ -57,13 +57,99 @@ export type Database = {
         };
         Relationships: [];
       };
-      messages: {
+      letter_stickers: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          letter_id: string;
+          rotation: number | null;
+          scale: number | null;
+          sticker_type: string;
+          x: number;
+          y: number;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          letter_id: string;
+          rotation?: number | null;
+          scale?: number | null;
+          sticker_type: string;
+          x: number;
+          y: number;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          letter_id?: string;
+          rotation?: number | null;
+          scale?: number | null;
+          sticker_type?: string;
+          x?: number;
+          y?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'letter_stickers_letter_id_fkey';
+            columns: ['letter_id'];
+            isOneToOne: false;
+            referencedRelation: 'letters';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      letter_styles: {
+        Row: {
+          created_at: string | null;
+          extra: Json | null;
+          font_family: string | null;
+          id: string;
+          letter_id: string;
+          note_color: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          extra?: Json | null;
+          font_family?: string | null;
+          id?: string;
+          letter_id: string;
+          note_color?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          extra?: Json | null;
+          font_family?: string | null;
+          id?: string;
+          letter_id?: string;
+          note_color?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'letter_styles_letter_id_fkey';
+            columns: ['letter_id'];
+            isOneToOne: false;
+            referencedRelation: 'letters';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      letters: {
         Row: {
           content: string;
           created_at: string | null;
           id: string;
           is_anonymous: boolean | null;
           paper_id: string;
+          teaser_rotation: number | null;
+          teaser_scale: number | null;
+          teaser_sticker_type: string | null;
+          teaser_title: string | null;
+          teaser_x: number | null;
+          teaser_y: number | null;
+          updated_at: string | null;
           writer_id: string;
           writer_name: string | null;
         };
@@ -73,6 +159,13 @@ export type Database = {
           id?: string;
           is_anonymous?: boolean | null;
           paper_id: string;
+          teaser_rotation?: number | null;
+          teaser_scale?: number | null;
+          teaser_sticker_type?: string | null;
+          teaser_title?: string | null;
+          teaser_x?: number | null;
+          teaser_y?: number | null;
+          updated_at?: string | null;
           writer_id: string;
           writer_name?: string | null;
         };
@@ -82,19 +175,26 @@ export type Database = {
           id?: string;
           is_anonymous?: boolean | null;
           paper_id?: string;
+          teaser_rotation?: number | null;
+          teaser_scale?: number | null;
+          teaser_sticker_type?: string | null;
+          teaser_title?: string | null;
+          teaser_x?: number | null;
+          teaser_y?: number | null;
+          updated_at?: string | null;
           writer_id?: string;
           writer_name?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: 'messages_paper_id_fkey';
+            foreignKeyName: 'letters_paper_id_fkey';
             columns: ['paper_id'];
             isOneToOne: false;
             referencedRelation: 'papers';
             referencedColumns: ['id'];
           },
           {
-            foreignKeyName: 'messages_writer_id_fkey';
+            foreignKeyName: 'letters_writer_id_fkey';
             columns: ['writer_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -145,29 +245,35 @@ export type Database = {
       };
       paper_styles: {
         Row: {
+          border_style: string | null;
           created_at: string | null;
           extra: Json | null;
           font_family: string | null;
           id: string;
           note_color: string | null;
+          note_texture: string | null;
           paper_id: string;
           updated_at: string | null;
         };
         Insert: {
+          border_style?: string | null;
           created_at?: string | null;
           extra?: Json | null;
           font_family?: string | null;
           id?: string;
           note_color?: string | null;
+          note_texture?: string | null;
           paper_id: string;
           updated_at?: string | null;
         };
         Update: {
+          border_style?: string | null;
           created_at?: string | null;
           extra?: Json | null;
           font_family?: string | null;
           id?: string;
           note_color?: string | null;
+          note_texture?: string | null;
           paper_id?: string;
           updated_at?: string | null;
         };
@@ -191,6 +297,8 @@ export type Database = {
           slug: string;
           theme: string | null;
           title: string;
+          updated_at: string | null;
+          year: number;
         };
         Insert: {
           bg_texture?: string | null;
@@ -201,6 +309,8 @@ export type Database = {
           slug: string;
           theme?: string | null;
           title: string;
+          updated_at?: string | null;
+          year: number;
         };
         Update: {
           bg_texture?: string | null;
@@ -211,11 +321,49 @@ export type Database = {
           slug?: string;
           theme?: string | null;
           title?: string;
+          updated_at?: string | null;
+          year?: number;
         };
         Relationships: [
           {
             foreignKeyName: 'papers_owner_id_fkey';
             columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      profile_visits: {
+        Row: {
+          id: string;
+          profile_id: string;
+          visited_at: string | null;
+          visitor_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          visited_at?: string | null;
+          visitor_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          profile_id?: string;
+          visited_at?: string | null;
+          visitor_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'profile_visits_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'profile_visits_visitor_id_fkey';
+            columns: ['visitor_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
@@ -271,7 +419,8 @@ export type Database = {
   };
 };
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+export type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+export type SupabaseDatabase = DatabaseWithoutInternals;
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
 

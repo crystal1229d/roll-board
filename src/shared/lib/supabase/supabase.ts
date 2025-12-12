@@ -1,13 +1,11 @@
-// Server Client - Server Action, Route Handler, RSC, Middleware
+'use server';
 
 import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
 import { getCookie, setCookie } from 'cookies-next';
-import type { CookieOptions } from '@supabase/ssr';
-import { Database } from '@/shared/type';
+import type { Database } from '@/shared/type/supabase';
 
-// Server Actions, RouteHandler
 export const createServerSideClient = async (serverComponent = false) => {
   const cookieStore = await cookies();
 
@@ -30,12 +28,10 @@ export const createServerSideClient = async (serverComponent = false) => {
   );
 };
 
-// RSC
 export const createServerSideClientRSC = async () => {
-  return createServerSideClient();
+  return createServerSideClient(true);
 };
 
-// Middleware
 export const createServerSideClientMiddleware = async (req: NextRequest, res: NextResponse) => {
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

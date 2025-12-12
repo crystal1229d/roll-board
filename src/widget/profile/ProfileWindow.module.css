@@ -1,20 +1,522 @@
-.window {
-  width: 420px;
-  background: #e7e7e7;
-  border: 3px solid #000;
-  box-shadow: 8px 8px 0 #000;
-}
-
-.titleBar {
-  background: linear-gradient(90deg, #7e00c8, #b56aff);
-  color: #fff;
-  padding: 5px 8px;
-  font-size: 12px;
-  font-family: "Verdana", sans-serif;
-}
-
-.body {
+.page {
+  width: 100%;
+  height: 100%;
   padding: 12px;
-  font-family: "Verdana", sans-serif;
+  background: repeating-linear-gradient(
+      45deg,
+      #f9e6ff,
+      #f9e6ff 6px,
+      #fdf7ff 6px,
+      #fdf7ff 12px
+    );
+  font-family: "Verdana", "Tahoma", sans-serif;
+  font-size: 12px;
+  color: #222;
+  overflow: auto;
+}
+
+/* 중심 프로필 패널 */
+.profileShell {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 3px solid #000;
+  box-shadow: 6px 6px 0 #b374ff;
+  image-rendering: pixelated;
+}
+
+/* 상단 헤더 바 */
+.headerBar {
+  padding: 6px 10px;
+  background: linear-gradient(90deg, #ff7ad9, #ffc9ff);
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* 로딩 / 에러 */
+.loadingBox {
+  padding: 20px;
+  text-align: center;
+}
+
+.errorText {
+  margin: 8px 0;
+  color: #d9204c;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* 상단 영역: 아바타 + 기본 정보 + 인사말 */
+.topSection {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  border-bottom: 2px dashed #ccc;
+  background: #fffdf8;
+}
+
+/* 왼쪽 아바타 칼럼 */
+.avatarColumn {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avatarFrame {
+  border: 3px solid #000;
+  padding: 4px;
+  background: #b7d6ff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ffb7f5;
+}
+
+.avatarFrame img {
+  width: 100%;
+  display: block;
+  border: 2px solid #fff;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    45deg,
+    #ffe6ff,
+    #ffe6ff 6px,
+    #ffd0f4 6px,
+    #ffd0f4 12px
+  );
+  border: 2px dashed #000;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+/* 기본 정보 박스 */
+.basicInfoBox {
+  border: 2px solid #000;
+  background: #fff;
+  padding: 6px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dotted #ccc;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-weight: bold;
+}
+
+.infoValue {
+  text-align: right;
+}
+
+/* 오른쪽 인사말 칼럼 */
+.greetingColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.glitterTitle {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  font-size: 16px;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 #ff85ff, -1px -1px 0 #8cd3ff;
+}
+
+.introText {
+  min-height: 60px;
+  padding: 8px;
+  border: 2px dotted #000;
+  background: #fffdf5;
+  font-size: 12px;
+}
+
+/* 상단 통계 카드 */
+.statsRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.statCard {
+  flex: 1;
+  border: 2px ridge #000;
+  background: linear-gradient(90deg, #ffb7f5, #ffe5ff);
+  text-align: center;
+  padding: 4px;
+  font-size: 10px;
+}
+
+.statLabel {
+  display: block;
+  font-weight: bold;
+}
+
+.statValue {
+  display: block;
   font-size: 13px;
+  margin-top: 2px;
+}
+
+/* 메인 2열 그리드 (MySpace 느낌) */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 공통 박스 */
+.box {
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.boxTitle {
+  padding: 4px 8px;
+  background: linear-gradient(90deg, #7ad9ff, #c9f0ff);
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+/* 폼 */
+.form {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.field span {
+  font-weight: bold;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid #000;
+  padding: 4px;
+  font-size: 11px;
+  font-family: inherit;
+  background: #fffdf8;
+}
+.saveBtn {
+  margin-top: 6px;
+  padding: 7px 12px;
+  border: 2px solid #000;
+  background: linear-gradient(180deg, #ffeafc 0%, #ffb7f5 50%, #ffdffb 100%);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 #b374ff;
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #8b52d1;
+}
+
+.saveBtn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #8b52d1;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+
+/* About / Interests / Comment */
+.aboutText {
+  padding: 8px;
+  font-size: 12px;
+}
+
+.interestsList {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.interestsList li::before {
+  content: '★ ';
+}
+
+.commentInfo {
+  padding: 8px;
+  font-size: 11px;
+  font-style: italic;
+}
+
+/* 반응형 (너비 좁을 때 스택) */
+@media (max-width: 768px) {
+  .topSection {
+    flex-direction: column;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .avatarColumn {
+    width: 100%;
+  }
+}
+
+/* 새로 추가: 롤링페이퍼 리스트 */
+.paperList {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  font-size: 11px;
+}
+
+.paperItem {
+  padding: 2px 0;
+  border-bottom: 1px dotted #ddd;
+}
+
+.paperItem:last-child {
+  border-bottom: none;
+}
+
+/* 하단 가짜 배너 스트립 */
+.bannerStripBottom {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-top: 2px dashed #ccc;
+  background: #fffdf8;
+}
+
+.bannerStripBottom img {
+  height: 67px;
+  image-rendering: pixelated;
+}
+/* Avatar upload panel */
+.avatarUploadPanel {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px;
+  border: 1px dashed #aaa;
+  background: #fffdf8;
+}
+
+.avatarUploadPreview {
+  width: 72px;
+  height: 72px;
+  border: 2px solid #000;
+  background: repeating-linear-gradient(
+    45deg,
+    #ffe6ff,
+    #ffe6ff 6px,
+    #ffd0f4 6px,
+    #ffd0f4 12px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.avatarUploadPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.avatarUploadControls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.avatarUploadButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* "이미지 선택" 버튼 */
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border: 2px solid #ffffff;
+  border-right-color: #555555;
+  border-bottom-color: #555555;
+  border-left-color: #ffffff;
+  border-top-color: #ffffff;
+  background: #dcdcdc;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.fileButton:active {
+  border-top-color: #555555;
+  border-left-color: #555555;
+  border-right-color: #ffffff;
+  border-bottom-color: #ffffff;
+  box-shadow: inset 1px 1px 0 #000;
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+/* "이미지 초기화" 버튼 – 스타일을 맞춰서 버튼 그룹으로 보이게 */.resetAvatarBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border: 2px solid #ffffff;
+  border-right-color: #555555;
+  border-bottom-color: #555555;
+  border-left-color: #ffffff;
+  border-top-color: #ffffff;
+  background: #f3e6ff;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.resetAvatarBtn:active {
+  border-top-color: #555555;
+  border-left-color: #555555;
+  border-right-color: #ffffff;
+  border-bottom-color: #ffffff;
+  box-shadow: inset 1px 1px 0 #000;
+}
+
+.resetAvatarBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* 아바타 안내 텍스트 – 더 작고 helpText 느낌 */
+.avatarHint {
+  margin: 2px 0 0;
+  font-size: 9px;
+  color: #777;
+  line-height: 1.3;
+}
+
+/* 올해 롤링페이퍼 정보 박스 (stats 하단, 올드웹 스타일) */
+.thisYearBox {
+  margin-top: 8px;
+  border: 2px solid #000;
+  background: #fdfdfd;
+  box-shadow: 3px 3px 0 #000;
+  font-size: 11px;
+}
+
+/* 상단 미니 헤더바 */
+.thisYearTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #ffcc00,
+      #ffcc00 4px,
+      #ffe680 4px,
+      #ffe680 8px
+    );
+  border-bottom: 2px solid #000;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+/* "LED 램프" 느낌 작은 점 */
+.thisYearTitle::before {
+  content: '●';
+  font-size: 10px;
+  color: #ff0000;
+  text-shadow: 0 0 2px #ff0000;
+}
+
+/* 내용 영역 */
+.thisYearEmpty {
+  margin: 6px 6px 8px;
+  font-size: 10px;
+  color: #555;
+}
+
+.thisYearList {
+  list-style: none;
+  margin: 0;
+  padding: 4px 6px 6px;
+}
+
+/* 각 롤링페이퍼 행을 테이블처럼 */
+.thisYearItem {
+  padding: 3px 4px;
+  border-bottom: 1px dotted #bbb;
+  background: #ffffff;
+}
+
+.thisYearItem:nth-child(2n) {
+  background: #f5f5ff;
+}
+
+.thisYearItem:last-child {
+  border-bottom: none;
+}
+
+.thisYearPaperTitle {
+  display: block;
+  font-weight: bold;
+}
+
+.thisYearMeta {
+  display: block;
+  font-size: 10px;
+  color: #666;
 }

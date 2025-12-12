@@ -1,0 +1,76 @@
+.board {
+  width: 600px;
+  padding: 20px;
+  border-radius: 20px;
+  border-width: 20px;
+  border-style: solid;
+  margin-bottom: 20px;
+}
+
+/* 테마 (테두리) */
+.theme_pink { border-color: #ff92c2; }
+.theme_blue { border-color: #9ecbff; }
+.theme_black { border-color: #333; }
+.theme_flower {
+  border-image: url('/patterns/border_flower.png') 30 stretch;
+}
+
+/* 내부 영역 */
+.inner {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* 배경 텍스처 */
+.bg_cork {
+  background-color: #e3c49b;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.25) 0, transparent 40%),
+    radial-gradient(circle, rgba(116,76,35,0.3) 0, transparent 50%);
+}
+
+.bg_gridPink {
+  background-image:
+    linear-gradient(#ffc1e3 1px, transparent 1px),
+    linear-gradient(90deg, #ffc1e3 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg_linedBlue {
+  background-image: linear-gradient(#9ecbff 2px, transparent 2px);
+  background-size: 100% 22px;
+}
+
+.bg_starNavy {
+  background-color: #081526;
+  background-image:
+    radial-gradient(circle, white 1px, transparent 1px),
+    radial-gradient(circle, white 1px, transparent 1px);
+  background-size: 40px 40px, 20px 20px;
+}
+
+/* 제목 */
+.title {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0,0,0,0.3);
+  padding: 6px 20px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+}
+
+/* 스티커 */
+.sticker {
+  width: 70px;
+  height: auto;
+  position: absolute;
+  cursor: grab;
+}

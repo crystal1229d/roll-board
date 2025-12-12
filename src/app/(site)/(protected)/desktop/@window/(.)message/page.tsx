@@ -14,9 +14,6 @@ export default function MessageModalOnDesktop() {
   return (
     <div className={styles.overlay}>
       <div className={styles.windowWrap}>
-        <button className={styles.closeBtn} onClick={onClose}>
-          ✕
-        </button>
         <MessageWindow />
       </div>
     </div>
