@@ -1,10 +1,11 @@
 'use client';
 
-import { useDesktopStore } from './useDesktopStore';
 import ProfileWindow from '@/widget/profile/ProfileWindow';
 import MessageWindow from '@/widget/message/MessageWindow';
-import DesktopWindow from '../ui/DesktopWindow';
 import PaperWindow from '@/widget/paper/PaperWindow';
+import PaperDetailWindow from '@/widget/paper/PaperDetailWindow';
+import DesktopWindow from '../ui/DesktopWindow';
+import { useDesktopStore } from './useDesktopStore';
 
 export default function WindowManager() {
   const windows = useDesktopStore((s) => s.windows);
@@ -16,7 +17,21 @@ export default function WindowManager() {
         .map((w) => {
           let content = null;
           if (w.type === 'board') content = <PaperWindow />;
-          if (w.type === 'profile') content = <ProfileWindow />;
+
+          if (w.type === 'paper') {
+            const slug = w.payload?.paperSlug;
+            content = slug ? <PaperDetailWindow paperSlug={slug} /> : <div>잘못된 paperSlug</div>;
+          }
+
+          if (w.type === 'profile') {
+            const userId = w.payload?.userId;
+            content = userId ? (
+              <ProfileWindow mode="user" userId={userId} />
+            ) : (
+              <ProfileWindow mode="me" />
+            );
+          }
+
           if (w.type === 'message') content = <MessageWindow />;
 
           return (

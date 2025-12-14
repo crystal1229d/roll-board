@@ -1,6 +1,7 @@
-import type { Tables } from '@/shared/type';
+import type { Tables, TablesInsert } from '@/shared/type/supabase';
 
 export type LetterRow = Tables<'letters'>;
+export type LetterInsert = TablesInsert<'letters'>;
 
 export type Letter = {
   id: string;

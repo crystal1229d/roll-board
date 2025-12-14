@@ -5,6 +5,12 @@ import { DesktopAppId } from '../config/app';
 
 type WindowType = DesktopAppId;
 
+export type DesktopWindowPayload = {
+  mode?: 'me' | 'user';
+  userId?: string;
+  paperSlug?: string;
+};
+
 export type DesktopWindowState = {
   id: string;
   type: WindowType;
@@ -16,13 +22,15 @@ export type DesktopWindowState = {
   zIndex: number;
   minimized: boolean;
   maximized: boolean;
+
+  payload?: DesktopWindowPayload;
 };
 
 type DesktopStore = {
   windows: DesktopWindowState[];
   highestZ: number;
 
-  openWindow: (type: DesktopAppId) => void;
+  openWindow: (type: DesktopAppId, payload?: DesktopWindowPayload) => void;
   closeWindow: (id: string) => void;
   bringToFront: (id: string) => void;
 
@@ -34,15 +42,14 @@ type DesktopStore = {
   resizeWindow: (id: string, width: number, height: number) => void;
 };
 
-export const useDesktopStore = create<DesktopStore>((set, get) => ({
+export const useDesktopStore = create<DesktopStore>((set) => ({
   windows: [],
   highestZ: 1,
 
-  openWindow: (type) =>
+  openWindow: (type, payload) =>
     set((state) => {
       const existing = state.windows.find((w) => w.type === type);
 
-      // 이미 떠 있는 창이 있으면 그 창만 포커스 + 최소화 해제
       if (existing) {
         const newHighestZ = state.highestZ + 1;
         return {
@@ -52,6 +59,7 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
                   ...w,
                   minimized: false,
                   zIndex: newHighestZ,
+                  payload: payload ?? w.payload,
                 }
               : w,
           ),
@@ -59,8 +67,12 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
         };
       }
 
+      let title = 'Window';
+      if (type === 'board') title = 'Board';
+      if (type === 'profile') title = payload?.mode === 'user' ? 'Profile' : 'My Profile';
+      if (type === 'message') title = 'Messages';
+
       const id = Date.now().toString();
-      const title = type === 'board' ? 'Board' : type === 'profile' ? 'Profile' : 'Messages';
 
       return {
         windows: [
@@ -76,6 +88,7 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
             zIndex: state.highestZ + 1,
             minimized: false,
             maximized: false,
+            payload,
           },
         ],
         highestZ: state.highestZ + 1,

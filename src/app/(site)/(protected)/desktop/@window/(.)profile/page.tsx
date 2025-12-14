@@ -7,7 +7,7 @@ export default function ProfileModalOnDesktop() {
   return (
     <div className={styles.overlay}>
       <div className={styles.windowWrap}>
-        <ProfileWindow />
+        <ProfileWindow mode="me" />
       </div>
     </div>
   );

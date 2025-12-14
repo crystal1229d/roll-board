@@ -1,15 +1,16 @@
+export type BgTextureGroup = 'pattern' | 'texture';
+
 export const BG_TEXTURE_OPTIONS = [
-  { id: 'cork', label: '기본 코르크', group: 'texture' },
+  // PATTERN
+  { id: 'pattern_gridPink', label: '분홍 격자', group: 'pattern' as const },
+  { id: 'pattern_linedBlue', label: '파란 줄노트', group: 'pattern' as const },
+  { id: 'pattern_verticalPurple', label: '보라 세로줄', group: 'pattern' as const },
+  { id: 'pattern_dotsYellow', label: '노란 땡땡이', group: 'pattern' as const },
 
-  // 단색
-  { id: 'solidCream', label: '단색 · 크림', group: 'solid' },
-  { id: 'solidPink', label: '단색 · 핑크', group: 'solid' },
-  { id: 'solidBlue', label: '단색 · 파랑', group: 'solid' },
-
-  // 패턴
-  { id: 'gridPink', label: '분홍 격자', group: 'pattern' },
-  { id: 'linedBlue', label: '파란 줄노트', group: 'pattern' },
-  { id: 'starNavy', label: '네이비 별무늬', group: 'pattern' },
+  // TEXTURE
+  { id: 'texture_cork', label: '코르크', group: 'texture' as const },
+  { id: 'texture_starry', label: '별', group: 'texture' as const },
+  { id: 'texture_clouds', label: '하늘', group: 'texture' as const },
 ] as const;
 
 export type BgTextureId = (typeof BG_TEXTURE_OPTIONS)[number]['id'];

@@ -1,22 +1,38 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { getSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
 import { usePaperIndex } from '@/feature/paper/hook/usePaperIndex';
+import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
 import styles from './PaperWindow.module.css';
 
 export default function PaperWindow() {
   const { items, loading, error } = usePaperIndex();
-  const router = useRouter();
+  const openWindow = useDesktopStore((s) => s.openWindow);
+
+  const [myUserId, setMyUserId] = useState<string | null>(null);
+
   const currentYear = new Date().getFullYear();
 
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setMyUserId(data.user?.id ?? null);
+    });
+  }, []);
+
   const handleClickUser = (userId: string) => {
-    // TODO: 실제 프로필 라우트에 맞게 수정
-    router.push(`/profiles/${userId}`);
+    const isMe = myUserId && userId === myUserId;
+    openWindow('profile', isMe ? { mode: 'me' } : { mode: 'user', userId });
   };
 
+  // const handleClickPaper = (userId: string) => {
+  //   const isMe = myUserId && userId === myUserId;
+  //   openWindow('paper', isMe ? { mode: 'me' } : { mode: 'user', userId });
+  // };
   const handleClickPaper = (slug: string) => {
-    // TODO: 실제 페이퍼 라우트에 맞게 수정
-    router.push(`/paper/${slug}`);
+    openWindow('paper', { paperSlug: slug });
   };
 
   return (

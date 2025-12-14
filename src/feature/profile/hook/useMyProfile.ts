@@ -51,7 +51,7 @@ export function useMyProfile() {
   }, [supabase, syncForm]);
 
   useEffect(() => {
-    void fetchProfile();
+    fetchProfile();
   }, [fetchProfile]);
 
   const setForm = (field: keyof typeof form, value: string) => {

@@ -338,18 +338,21 @@ export type Database = {
         Row: {
           id: string;
           profile_id: string;
+          visit_date: string | null;
           visited_at: string | null;
           visitor_id: string | null;
         };
         Insert: {
           id?: string;
           profile_id: string;
+          visit_date?: string | null;
           visited_at?: string | null;
           visitor_id?: string | null;
         };
         Update: {
           id?: string;
           profile_id?: string;
+          visit_date?: string | null;
           visited_at?: string | null;
           visitor_id?: string | null;
         };
@@ -419,8 +422,7 @@ export type Database = {
   };
 };
 
-export type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
-export type SupabaseDatabase = DatabaseWithoutInternals;
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
 

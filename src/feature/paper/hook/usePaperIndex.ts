@@ -19,6 +19,13 @@ export type PaperIndexItem = {
   paperCreatedAt: string;
 };
 
+type PaperIndexSelectRow = Pick<
+  PaperRow,
+  'id' | 'title' | 'slug' | 'year' | 'created_at' | 'is_published'
+> & {
+  owner: Pick<ProfileRow, 'id' | 'display_name' | 'intro' | 'avatar_url'> | null;
+};
+
 export function usePaperIndex() {
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
   const [items, setItems] = useState<PaperIndexItem[]>([]);
@@ -26,6 +33,8 @@ export function usePaperIndex() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let alive = true;
+
     const fetchAll = async () => {
       try {
         setLoading(true);
@@ -33,37 +42,25 @@ export function usePaperIndex() {
 
         const currentYear = new Date().getFullYear();
 
-        // 올해 + 공개된 paper들 + owner 프로필 join
-        const { data, error } = await supabase
+        const res = await supabase
           .from('papers')
           .select(
             `
-            id,
-            title,
-            slug,
-            year,
-            created_at,
-            is_published,
-            owner:profiles (
-              id,
-              display_name,
-              intro,
-              avatar_url
-            )
+            id, title, slug, year, created_at, is_published,
+            owner:profiles ( id, display_name, intro, avatar_url )
           `,
           )
           .eq('year', currentYear)
           .eq('is_published', true)
-          .order('created_at', { ascending: true });
+          .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (res.error) throw res.error;
 
-        // ── 1) raw -> (owner + paper) 매핑 ──────────────────
-        const raw: PaperIndexItem[] = (data ?? [])
-          .map((row: any) => {
-            const paper = row as PaperRow & { owner?: ProfileRow | null };
-            const owner = paper.owner ?? null;
+        const rows = (res.data ?? []) as unknown as PaperIndexSelectRow[];
 
+        const raw: PaperIndexItem[] = rows
+          .map((paper) => {
+            const { owner } = paper;
             if (!owner) return null;
 
             return {
@@ -80,41 +77,30 @@ export function usePaperIndex() {
           })
           .filter((v): v is PaperIndexItem => v !== null);
 
-        // ── 2) 한 유저당 올해 paper 하나만 (여러 개면 가장 최신 created_at) ──
+        // 유저당 1개(가장 최신 created_at)
         const byUser = new Map<string, PaperIndexItem>();
-
         for (const item of raw) {
-          const existing = byUser.get(item.userId);
-          if (!existing) {
-            byUser.set(item.userId, item);
-            continue;
-          }
-
-          // created_at 기준으로 더 최신 것 선택
-          const prevTime = existing.paperCreatedAt ? Date.parse(existing.paperCreatedAt) : 0;
-          const currTime = item.paperCreatedAt ? Date.parse(item.paperCreatedAt) : 0;
-
-          if (currTime >= prevTime) {
-            byUser.set(item.userId, item);
-          }
+          if (!byUser.has(item.userId)) byUser.set(item.userId, item);
         }
 
-        // ── 3) displayName 기준으로 정렬해서 리스트 반환 ─────────────
         const deduped = Array.from(byUser.values()).sort((a, b) =>
           a.displayName.localeCompare(b.displayName, 'ko'),
         );
 
-        setItems(deduped);
+        if (alive) setItems(deduped);
       } catch (e) {
         const err = e as Error;
-        console.error(err);
-        setError(err.message ?? '알 수 없는 에러가 발생했어요.');
+        if (alive) setError(err.message ?? '알 수 없는 에러가 발생했어요.');
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
-    void fetchAll();
+    fetchAll();
+
+    return () => {
+      alive = false;
+    };
   }, [supabase]);
 
   return { items, loading, error };

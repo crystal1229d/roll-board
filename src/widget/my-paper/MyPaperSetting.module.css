@@ -4,13 +4,7 @@
   width: 100%;
   height: 100%;
   padding: 12px;
-  background: repeating-linear-gradient(
-    45deg,
-    #f9e6ff,
-    #f9e6ff 6px,
-    #fdf7ff 6px,
-    #fdf7ff 12px
-  );
+  background: repeating-linear-gradient(45deg, #f9e6ff, #f9e6ff 6px, #fdf7ff 6px, #fdf7ff 12px);
   font-family: 'Verdana', 'Tahoma', sans-serif;
   font-size: 12px;
   color: #222;
@@ -135,7 +129,6 @@
   color: #555;
 }
 
-
 /* 팔레트 영역 */
 .textureSection {
   margin-top: 6px;
@@ -150,7 +143,8 @@
   margin-bottom: 4px;
 }
 
-/* 코르크 게시판 형태 미리보기 */.texturePreviewBoard {
+/* 코르크 게시판 형태 미리보기 */
+.texturePreviewBoard {
   width: 100%;
   max-width: 260px;
   height: 120px;
@@ -176,8 +170,7 @@
 /* 코르크 배경 */
 .textureBoard_cork {
   background-color: #e3c49b;
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.23) 0, transparent 40%),
+  background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.23) 0, transparent 40%),
     radial-gradient(circle at 70% 80%, rgba(116, 76, 35, 0.35) 0, transparent 50%),
     radial-gradient(circle at 30% 60%, rgba(160, 110, 60, 0.3) 0, transparent 45%);
   background-size: 180px 180px;
@@ -198,8 +191,7 @@
 
 .textureBoard_gridPink {
   background-color: #fff7fb;
-  background-image:
-    linear-gradient(#ffc1e3 1px, transparent 1px),
+  background-image: linear-gradient(#ffc1e3 1px, transparent 1px),
     linear-gradient(90deg, #ffc1e3 1px, transparent 1px);
   background-size: 16px 16px;
 }
@@ -212,8 +204,7 @@
 
 .textureBoard_starNavy {
   background-color: #081526;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
     radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
   background-size: 40px 40px, 24px 24px;
   background-position: 0 0, 12px 8px;
@@ -270,8 +261,7 @@
 /* 각 카드 배경 (미니버전) */
 .texture_cork {
   background-color: #e3c49b;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.25) 0, transparent 40%),
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0, transparent 40%),
     radial-gradient(circle, rgba(116, 76, 35, 0.3) 0, transparent 50%);
   background-size: 40px 40px, 26px 26px;
 }
@@ -288,31 +278,107 @@
   background: #e0f0ff;
 }
 
-.texture_gridPink {
+/* pattern */
+.texture_pattern_gridPink {
   background-color: #fff7fb;
-  background-image:
-    linear-gradient(#ffc1e3 1px, transparent 1px),
+  background-image: linear-gradient(#ffc1e3 1px, transparent 1px),
     linear-gradient(90deg, #ffc1e3 1px, transparent 1px);
   background-size: 8px 8px;
 }
 
-.texture_linedBlue {
+.texture_pattern_linedBlue {
   background-color: #fbfdff;
   background-image: linear-gradient(#b6cfff 1px, transparent 1px);
   background-size: 100% 10px;
 }
 
-.texture_starNavy {
-  background-color: #081526;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
-  background-size: 14px 14px, 8px 8px;
-  background-position: 0 0, 4px 2px;
+.texture_pattern_verticalPurple {
+  background-color: #fbf7ff;
+  background-image: linear-gradient(90deg, rgba(140, 90, 255, 0.6) 2px, transparent 2px);
+  background-size: 14px 14px;
+}
+
+.texture_pattern_dotsYellow {
+  background-color: #fff3b0;
+  background-image: radial-gradient(circle, rgba(120, 80, 20, 0.35) 2px, transparent 2px);
+  background-size: 12px 12px;
+}
+
+/* texture */
+.texture_texture_cork {
+  background-image: url('/img/wallpaper/cork.jpeg');
+  background-size: cover;
+  background-position: center;
+}
+
+.texture_texture_starry {
+  background-image: url('/img/wallpaper/starry.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.texture_texture_clouds {
+  background-image: url('/img/wallpaper/clouds.png');
+  background-size: cover;
+  background-position: center;
 }
 
 .textureLabel {
   font-size: 9px;
   font-weight: bold;
   text-shadow: 0 1px 0 #fff;
+}
+
+.colorPalette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.colorSwatch {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #000;
+  box-shadow: 1px 1px 0 #000;
+  cursor: pointer;
+  padding: 0;
+}
+
+.colorSwatchActive {
+  outline: 3px solid #ff4db8;
+  outline-offset: 2px;
+}
+
+.colorPickerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.colorPickerLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.colorPickerLabel input[type='color'] {
+  width: 34px;
+  height: 24px;
+  border: 2px solid #000;
+  padding: 0;
+  background: #fff;
+  cursor: pointer;
+}
+
+.colorHex {
+  font-family: 'Verdana', 'Tahoma', sans-serif;
+  font-size: 10px;
+  border: 2px solid #000;
+  background: #fff;
+  padding: 3px 6px;
+  box-shadow: 1px 1px 0 #000;
 }

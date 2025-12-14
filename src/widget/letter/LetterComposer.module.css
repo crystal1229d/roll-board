@@ -1,0 +1,226 @@
+.overlay {
+  all: unset; /* button 기본 스타일 제거 */
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.window {
+  width: min(980px, 96vw);
+  border: 3px solid #000;
+  background: #fff;
+  box-shadow: 8px 8px 0 #000;
+  font-family: Verdana, Tahoma, sans-serif;
+}
+
+.titleBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, #9ad7ff, #e8fbff);
+  border-bottom: 2px solid #000;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dim {
+  opacity: 0.75;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.closeBtn {
+  margin-left: auto;
+  border: 2px solid #000;
+  background: #ffd1e8;
+  font-weight: 900;
+  width: 34px;
+  height: 24px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.body {
+  padding: 10px;
+  background: #fffdf8;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 10px;
+}
+
+.leftPane,
+.rightPane {
+  border: 2px solid #000;
+  background: #fff;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.paneTitle {
+  padding: 6px 8px;
+  border-bottom: 2px solid #000;
+  background: #fff3b0;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.corkBoard {
+  height: 420px;
+  position: relative;
+  border-top: 0;
+  background-image: url('/img/wallpaper/cork.jpeg');
+  background-size: cover;
+  background-position: center;
+  cursor: crosshair;
+  overflow: hidden;
+}
+
+.note {
+  position: absolute;
+  width: 190px;
+  height: 150px;
+  border: 2px solid #000;
+  background: #fff7a8;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+  cursor: grab;
+  padding: 10px 10px 8px;
+  text-align: left;
+}
+
+.pin {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle at 30% 30%, #fff, #ff4b4b 60%, #b30000);
+  border: 2px solid #000;
+  border-radius: 999px;
+}
+
+.noteTitle {
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-top: 6px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.45);
+  padding-bottom: 4px;
+}
+
+.noteHint {
+  margin-top: 8px;
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+.miniControls {
+  padding: 8px;
+  border-top: 2px solid #000;
+  background: #fffdf8;
+}
+
+.sliderRow {
+  display: grid;
+  grid-template-columns: 46px 1fr 64px;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.sliderRow input[type='range'] {
+  width: 100%;
+}
+
+.mono {
+  font-family: Verdana, Tahoma, monospace;
+  font-weight: 900;
+  text-align: right;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.field span {
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.field textarea {
+  border: 2px solid #000;
+  background: #fffdf8;
+  padding: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  resize: vertical;
+  min-height: 240px;
+}
+
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.errorBox {
+  margin: 0 8px 8px;
+  border: 2px solid #000;
+  background: #ffe0e0;
+  padding: 8px;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.btnRow {
+  display: flex;
+  gap: 8px;
+  padding: 0 8px 8px;
+}
+
+.btnGhost {
+  border: 2px solid #000;
+  background: #fff;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.btnPrimary {
+  margin-left: auto;
+  border: 2px solid #000;
+  background: linear-gradient(180deg, #ffeafc, #ffb7f5 50%, #ffdffb 100%);
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.btnGhost:disabled,
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.footerHint {
+  padding: 0 8px 10px;
+  font-size: 11px;
+  opacity: 0.8;
+}

@@ -2,14 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
-import type { MyPaperWithSettings, PaperUpdate, PaperStickerRow } from '@/entity/paper/type';
-import {
-  fetchMyPapersWithSettings,
-  updatePaperSetting,
-  clearPaperStickers,
-} from '@/entity/paper/api/setting';
-import { findStickerDef, StickerTypeId } from '../config/stickerCatalog';
-import type { TablesInsert, TablesUpdate } from '@/shared/type';
+import type { MyPaperWithSettings, PaperUpdate } from '@/entity/paper/type';
+import { fetchMyPapersWithSettings, updatePaperSetting } from '@/entity/paper/api/setting';
 
 type PaperForm = {
   title: string;
@@ -17,29 +11,6 @@ type PaperForm = {
   bg_texture: string;
   is_published: boolean;
 };
-
-export type StickerView = {
-  id: string;
-  type: StickerTypeId | string;
-  src: string;
-  x: number;
-  y: number;
-  rotation: number;
-  scale: number;
-};
-
-function mapStickerRowToView(row: PaperStickerRow): StickerView {
-  const def = findStickerDef(row.sticker_type);
-  return {
-    id: row.id,
-    type: row.sticker_type,
-    src: def?.src ?? '/stickers/default.png',
-    x: row.x,
-    y: row.y,
-    rotation: row.rotation ?? 0,
-    scale: row.scale ?? 1,
-  };
-}
 
 export function useMyPaperSettings() {
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
@@ -62,12 +33,6 @@ export function useMyPaperSettings() {
   const current = useMemo(
     () => (currentPaperId ? items.find((i) => i.paper.id === currentPaperId) ?? null : null),
     [items, currentPaperId],
-  );
-
-  // ────────── derived: sticker view ──────────
-  const stickersView = useMemo<StickerView[]>(
-    () => (current ? current.stickers.map(mapStickerRowToView) : []),
-    [current],
   );
 
   // ─────────────── syncForm ───────────────
@@ -108,7 +73,7 @@ export function useMyPaperSettings() {
   }, [supabase, syncForm]);
 
   useEffect(() => {
-    void fetchAll();
+    fetchAll();
   }, [fetchAll]);
 
   // ─────────────── form setter ───────────────
@@ -152,136 +117,11 @@ export function useMyPaperSettings() {
     }
   }, [current, form, supabase]);
 
-  // ─────────────── stickers: add ───────────────
-  const addSticker = useCallback(
-    async (stickerType: StickerTypeId) => {
-      if (!current) return;
-
-      try {
-        setSaving(true);
-        setError(null);
-
-        const payload: TablesInsert<'paper_stickers'> = {
-          paper_id: current.paper.id,
-          sticker_type: stickerType,
-          x: 80,
-          y: 80,
-          rotation: 0,
-          scale: 1,
-        };
-
-        const { data, error } = await supabase
-          .from('paper_stickers')
-          .insert(payload as any)
-          .select('*')
-          .single();
-
-        if (error) throw error;
-
-        setItems((prev) =>
-          prev.map((p) =>
-            p.paper.id === current.paper.id
-              ? { ...p, stickers: [...p.stickers, data as PaperStickerRow] }
-              : p,
-          ),
-        );
-      } catch (e) {
-        setError((e as Error).message ?? '스티커 추가 중 오류가 발생했어요');
-      } finally {
-        setSaving(false);
-      }
-    },
-    [current, supabase],
-  );
-
-  // ─────────────── stickers: move ───────────────
-  const moveSticker = useCallback(
-    async (stickerId: string, x: number, y: number) => {
-      if (!current) return;
-
-      try {
-        setSaving(true);
-
-        const patch: TablesUpdate<'paper_stickers'> = { x, y };
-
-        const { error } = await (supabase.from('paper_stickers') as any)
-          .update(patch as any)
-          .eq('id', stickerId);
-
-        if (error) throw error;
-
-        setItems((prev) =>
-          prev.map((p) =>
-            p.paper.id === current.paper.id
-              ? {
-                  ...p,
-                  stickers: p.stickers.map((s) => (s.id === stickerId ? { ...s, x, y } : s)),
-                }
-              : p,
-          ),
-        );
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setSaving(false);
-      }
-    },
-    [current, supabase],
-  );
-
-  // ─────────────── stickers: delete ───────────────
-  const deleteSticker = useCallback(
-    async (stickerId: string) => {
-      if (!current) return;
-
-      try {
-        setSaving(true);
-
-        const { error } = await supabase.from('paper_stickers').delete().eq('id', stickerId);
-        if (error) throw error;
-
-        setItems((prev) =>
-          prev.map((p) =>
-            p.paper.id === current.paper.id
-              ? { ...p, stickers: p.stickers.filter((s) => s.id !== stickerId) }
-              : p,
-          ),
-        );
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setSaving(false);
-      }
-    },
-    [current, supabase],
-  );
-
-  // ─────────────── stickers: reset all ───────────────
-  const resetStickers = useCallback(async () => {
-    try {
-      if (!current) return;
-
-      setSaving(true);
-      setError(null);
-
-      await clearPaperStickers(supabase, current.paper.id);
-
-      setItems((prev) =>
-        prev.map((p) => (p.paper.id === current.paper.id ? { ...p, stickers: [] } : p)),
-      );
-    } catch (e) {
-      setError((e as Error).message ?? '스티커 초기화 중 오류 발생');
-    } finally {
-      setSaving(false);
-    }
-  }, [current, supabase]);
-
   return {
     // Data
     items,
     current,
     currentPaperId,
-    stickersView,
 
     // Form
     form,
@@ -295,10 +135,6 @@ export function useMyPaperSettings() {
     // Actions
     selectPaper,
     save,
-    resetStickers,
     refresh: fetchAll,
-    addSticker,
-    moveSticker,
-    deleteSticker,
   };
 }

@@ -69,7 +69,7 @@ export default function LoginWidget() {
 
             <div className={styles.heroText}>
               <div className={styles.headerBadge}>
-                <img src="/img/star-yellow-glitter.png" alt="star" height={30} />
+                <img src="/img/sticker/star-yellow-glitter.png" alt="star" height={30} />
                 <p>
                   YOU ARE ENTERING
                   <br />A CYBER ZONE…
@@ -132,19 +132,19 @@ export default function LoginWidget() {
       </div>
 
       {/* 배경 스티커 */}
-      <img src="/img/star-blue.png" className={styles.floating1} alt="" />
-      <img src="/img/star-pink-glitter.png" className={styles.floating2} alt="" />
-      <img src="/img/gun-pink-glitter.png" className={styles.floating3} alt="" />
-      <img src="/img/circle-green-glitter.png" className={styles.floating4} alt="" />
-      <img src="/img/heart-purple-glitter-love.png" className={styles.floating5} alt="" />
-      <img src="/img/smile.png" className={styles.floating6} alt="" />
-      <img src="/img/star-yellow-glitter.png" className={styles.floating7} alt="" />
-      <img src="/img/arrow-pink-glitter.png" className={styles.floating8} alt="" />
-      <img src="/img/heart-pink-glitter-loveya.png" className={styles.floating9} alt="" />
-      <img src="/img/heart-purple-stripe.png" className={styles.floating10} alt="" />
-      <img src="/img/computer-glitter.png" className={styles.floating11} alt="" />
-      <img src="/img/star-pink-glitter-online.png" className={styles.floating12} alt="" />
-      <img src="/img/star-yellow-glitter.png" className={styles.floating13} alt="" />
+      <img src="/img/sticker/star-blue.png" className={styles.floating1} alt="" />
+      <img src="/img/sticker/star-pink-glitter.png" className={styles.floating2} alt="" />
+      <img src="/img/sticker/gun-pink-glitter.png" className={styles.floating3} alt="" />
+      <img src="/img/sticker/circle-green-glitter.png" className={styles.floating4} alt="" />
+      <img src="/img/sticker/heart-purple-glitter-love.png" className={styles.floating5} alt="" />
+      <img src="/img/sticker/smile.png" className={styles.floating6} alt="" />
+      <img src="/img/sticker/star-yellow-glitter.png" className={styles.floating7} alt="" />
+      <img src="/img/sticker/arrow-pink-glitter.png" className={styles.floating8} alt="" />
+      <img src="/img/sticker/heart-pink-glitter-loveya.png" className={styles.floating9} alt="" />
+      <img src="/img/sticker/heart-purple-stripe.png" className={styles.floating10} alt="" />
+      <img src="/img/sticker/computer-glitter.png" className={styles.floating11} alt="" />
+      <img src="/img/sticker/star-pink-glitter-online.png" className={styles.floating12} alt="" />
+      <img src="/img/sticker/star-yellow-glitter.png" className={styles.floating13} alt="" />
     </div>
   );
 }

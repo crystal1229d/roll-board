@@ -1,32 +1,242 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useMyProfile } from '@/feature/profile/hook/useMyProfile';
 import { useMyRollingpapers, SentLetterSummary } from '@/feature/profile/hook/useMyRollingpapers';
+import { useUserProfile } from '@/feature/profile/hook/useUserProfile';
+import { useUserRollingpapers } from '@/feature/profile/hook/useUserRollingpapers';
 import styles from './ProfileWindow.module.css';
 
-export default function ProfileWindow() {
+type Props = { mode: 'me' } | { mode: 'user'; userId: string };
+
+export default function ProfileWindow(props: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define, react/destructuring-assignment
+  if (props.mode === 'me') return <ProfileMe />;
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define, react/destructuring-assignment
+  return <ProfileUser userId={props.userId} />;
+}
+
+/* ─────────────────────────────────────────────
+ * Shared: Top section UI (너가 원하는 “딱 여기까지만”)
+ * 방문자수는 제거
+ * ───────────────────────────────────────────── */
+type PaperSummary = {
+  id: string;
+  title: string;
+  year: number;
+  createdAt: string;
+  letterCount: number;
+};
+
+type TopSectionProps = {
+  currentYear: number;
+  profile: { avatar_url: string | null; created_at: string | null };
+  form: { display_name: string; intro: string; avatar_url?: string };
+  receivedThisYearCount: number;
+  sentThisYearCount: number;
+  thisYearPapers: PaperSummary[];
+};
+
+function ProfileTopSection({
+  currentYear,
+  profile,
+  form,
+  receivedThisYearCount,
+  sentThisYearCount,
+  thisYearPapers,
+}: TopSectionProps) {
+  return (
+    <>
+      <div className={styles.headerBar}>
+        <span>★ {form.display_name || 'My Space'} ✶ Roll-Board Profile ★</span>
+      </div>
+
+      <div className={styles.topSection}>
+        <div className={styles.avatarColumn}>
+          <div className={styles.avatarFrame}>
+            {profile.avatar_url ? (
+              <img src={profile.avatar_url} alt="avatar" />
+            ) : (
+              <div className={styles.avatarPlaceholder}>NO AVATAR</div>
+            )}
+          </div>
+
+          <div className={styles.basicInfoBox}>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Display Name</span>
+              <span className={styles.infoValue}>{form.display_name || 'Anonymous'}</span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Member Since</span>
+              <span className={styles.infoValue}>
+                {profile.created_at?.slice(0, 10) ?? '????-??-??'}
+              </span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Status</span>
+              <span className={styles.infoValue}>★ ONLINE ★</span>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.greetingColumn}>
+          <div className={styles.glitterTitle}>✶ WELCOME TO MY CYBER ROOM ✶</div>
+          <p className={styles.introText}>
+            {form.intro || '아직 자기소개가 없어요. 나를 소개하는 멋진 한 줄을 적어볼까?'}
+          </p>
+
+          <div className={styles.statsRow}>
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>올해 받은 Letter</span>
+              <span className={styles.statValue}>{receivedThisYearCount}개</span>
+            </div>
+            <div className={styles.statCard}>
+              <span className={styles.statLabel}>올해 보낸 Letter</span>
+              <span className={styles.statValue}>{sentThisYearCount}개</span>
+            </div>
+          </div>
+
+          <div className={styles.thisYearBox}>
+            <div className={styles.thisYearTitle}>★ {currentYear} 나의 롤링페이퍼</div>
+            {thisYearPapers.length === 0 ? (
+              <p className={styles.thisYearEmpty}>
+                올해 만든 롤링페이퍼가 아직 없어요. 새로운 추억을 시작해볼까요?
+              </p>
+            ) : (
+              <ul className={styles.thisYearList}>
+                {thisYearPapers.map((p) => (
+                  <li key={p.id} className={styles.thisYearItem}>
+                    <span className={styles.thisYearPaperTitle}>{p.title}</span>
+                    <span className={styles.thisYearMeta}>
+                      {p.letterCount}개의 편지 · 생성일 {p.createdAt.slice(0, 10)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────
+ * User mode: TopSection까지만 보여주기
+ * ───────────────────────────────────────────── */
+function ProfileUser({ userId }: { userId: string }) {
+  const currentYear = new Date().getFullYear();
+
+  const { profile, form, loading, error } = useUserProfile(userId);
+  const userRolling = useUserRollingpapers(userId);
+
+  const receivedThisYearCount = userRolling.receivedThisYearCount ?? 0;
+  const sentThisYearCount = userRolling.sentThisYearCount ?? 0;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const papers = userRolling.papers ?? [];
+  const thisYearPapers = useMemo(
+    () => papers.filter((p) => p.year === currentYear),
+    [papers, currentYear],
+  );
+
+  if (loading || userRolling.loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.profileShell}>
+          <div className={styles.headerBar}>★ Loading Cyber Profile… ★</div>
+          <div className={styles.loadingBox}>Loading glitter data… ✧</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile || !form) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.profileShell}>
+          <div className={styles.headerBar}>★ Profile ★</div>
+          <p className={styles.errorText}>
+            {error || userRolling.error || '프로필을 불러올 수 없어요 :('}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.profileShell}>
+        <ProfileTopSection
+          currentYear={currentYear}
+          profile={profile}
+          form={form}
+          receivedThisYearCount={receivedThisYearCount}
+          sentThisYearCount={sentThisYearCount}
+          thisYearPapers={thisYearPapers}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+ * Me mode: TopSection + 편집/내가보낸편지 유지
+ * ───────────────────────────────────────────── */
+function ProfileMe() {
+  const currentYear = new Date().getFullYear();
+
+  const meProfile = useMyProfile();
+  const meRolling = useMyRollingpapers();
+
   const {
     profile,
+    form,
     loading,
     saving,
     error,
-    form,
     setForm,
     save,
     updateAvatar,
     resetAvatarToDefault,
-  } = useMyProfile();
+  } = meProfile;
 
   const {
     myPapers,
     sentLetters,
     receivedThisYearCount,
     sentThisYearCount,
-    visitCount,
     loading: rollingLoading,
     updateSentLetter,
     deleteSentLetter,
-  } = useMyRollingpapers();
+  } = meRolling;
+
+  const thisYearPapers = useMemo(
+    () => (myPapers ?? []).filter((p) => p.year === currentYear),
+    [myPapers, currentYear],
+  );
+
+  if (loading || rollingLoading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.profileShell}>
+          <div className={styles.headerBar}>★ Loading My Cyber Profile… ★</div>
+          <div className={styles.loadingBox}>Loading glitter data… ✧</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile || !form) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.profileShell}>
+          <div className={styles.headerBar}>★ My Profile ★</div>
+          <p className={styles.errorText}>{error || '프로필을 불러올 수 없어요 :('}</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +245,7 @@ export default function ProfileWindow() {
 
   const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    await updateAvatar(file);
-  };
-
-  const handleAvatarReset = async () => {
-    await resetAvatarToDefault();
+    await updateAvatar(e.target.files[0]);
   };
 
   const handleEditSentLetter = async (letter: SentLetterSummary) => {
@@ -55,116 +260,20 @@ export default function ProfileWindow() {
     await deleteSentLetter(letterId);
   };
 
-  if (loading || rollingLoading) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.profileShell}>
-          <div className={styles.headerBar}>★ Loading My Cyber Profile… ★</div>
-          <div className={styles.loadingBox}>Loading glitter data… ✧</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.profileShell}>
-          <div className={styles.headerBar}>★ My Profile ★</div>
-          <p className={styles.errorText}>프로필을 불러올 수 없어요 :(</p>
-        </div>
-      </div>
-    );
-  }
-
-  const visitCountLabel = visitCount.toString().padStart(7, '0');
-  const currentYear = new Date().getFullYear();
-  const thisYearPapers = myPapers.filter((p) => p.year === currentYear);
-
   return (
     <div className={styles.page}>
       <div className={styles.profileShell}>
-        {/* 상단 헤더 영역 */}
-        <div className={styles.headerBar}>
-          <span>★ {form.display_name || 'My Space'} ✶ Roll-Board Profile ★</span>
-        </div>
+        <ProfileTopSection
+          currentYear={currentYear}
+          profile={profile}
+          form={form}
+          receivedThisYearCount={receivedThisYearCount ?? 0}
+          sentThisYearCount={sentThisYearCount ?? 0}
+          thisYearPapers={thisYearPapers}
+        />
 
-        {/* 상단 메인 영역 */}
-        <div className={styles.topSection}>
-          <div className={styles.avatarColumn}>
-            <div className={styles.avatarFrame}>
-              {/* ✅ 상단 아바타는 "저장된 profile 기준" */}
-              {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt="avatar" />
-              ) : (
-                <div className={styles.avatarPlaceholder}>NO AVATAR</div>
-              )}
-            </div>
-            <div className={styles.basicInfoBox}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>Display Name</span>
-                <span className={styles.infoValue}>{form.display_name || 'Anonymous'}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>Member Since</span>
-                <span className={styles.infoValue}>
-                  {profile.created_at?.slice(0, 10) ?? '????-??-??'}
-                </span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>Status</span>
-                <span className={styles.infoValue}>★ ONLINE ★</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.greetingColumn}>
-            <div className={styles.glitterTitle}>✶ WELCOME TO MY CYBER ROOM ✶</div>
-            <p className={styles.introText}>
-              {form.intro || '아직 자기소개가 없어요. 나를 소개하는 멋진 한 줄을 적어볼까?'}
-            </p>
-
-            <div className={styles.statsRow}>
-              <div className={styles.statCard}>
-                <span className={styles.statLabel}>올해 받은 Letter</span>
-                <span className={styles.statValue}>{receivedThisYearCount}개</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statLabel}>올해 보낸 Letter</span>
-                <span className={styles.statValue}>{sentThisYearCount}개</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statLabel}>방문자 수</span>
-                <span className={styles.statValue}>{visitCountLabel}</span>
-              </div>
-            </div>
-
-            {/* ✅ 올해 롤링페이퍼 상세 컴포넌트 (stats 하단) */}
-            <div className={styles.thisYearBox}>
-              <div className={styles.thisYearTitle}>★ {currentYear} 나의 롤링페이퍼</div>
-              {thisYearPapers.length === 0 ? (
-                <p className={styles.thisYearEmpty}>
-                  올해 만든 롤링페이퍼가 아직 없어요. 새로운 추억을 시작해볼까요?
-                </p>
-              ) : (
-                <ul className={styles.thisYearList}>
-                  {thisYearPapers.map((p) => (
-                    <li key={p.id} className={styles.thisYearItem}>
-                      <span className={styles.thisYearPaperTitle}>{p.title}</span>
-                      <span className={styles.thisYearMeta}>
-                        {p.letterCount}개의 편지 · 생성일 {p.createdAt.slice(0, 10)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* 메인 2열 그리드: 왼쪽(프로필 편집), 오른쪽(정보) */}
+        {/* me 전용 UI */}
         <div className={styles.mainGrid}>
-          {/* 왼쪽: 프로필 편집 */}
           <div className={styles.leftColumn}>
             <div className={styles.box}>
               <div className={styles.boxTitle}>★ Profile Edit</div>
@@ -202,15 +311,12 @@ export default function ProfileWindow() {
                         <button
                           type="button"
                           className={styles.resetAvatarBtn}
-                          onClick={handleAvatarReset}
+                          onClick={resetAvatarToDefault}
                           disabled={saving}
                         >
                           이미지 초기화
                         </button>
                       </div>
-                      <p className={styles.avatarHint}>
-                        1:1 비율의 작은 이미지를 추천해요. (최대 약 2MB, JPEG / PNG)
-                      </p>
                     </div>
                   </div>
                 </label>
@@ -221,7 +327,6 @@ export default function ProfileWindow() {
                     rows={4}
                     value={form.intro}
                     onChange={(e) => setForm('intro', e.target.value)}
-                    placeholder="마음껏 자기소개를 적어보세요 ✶"
                   />
                 </label>
 
@@ -234,16 +339,7 @@ export default function ProfileWindow() {
             </div>
           </div>
 
-          {/* 오른쪽: 롤링페이퍼/편지 정보 */}
           <div className={styles.rightColumn}>
-            <div className={styles.box}>
-              <div className={styles.boxTitle}>★ About This Space</div>
-              <p className={styles.aboutText}>
-                이곳은 나만의 Roll✶Board 프로필이에요. 친구들에게 롤링페이퍼를 받고, 추억을 쌓고,
-                방명록처럼 남겨둘 수 있는 작은 사이버 방입니다 ✶
-              </p>
-            </div>
-
             <div className={styles.box}>
               <div className={styles.boxTitle}>★ 내 롤링페이퍼</div>
               {myPapers.length === 0 ? (
@@ -268,7 +364,7 @@ export default function ProfileWindow() {
                   {sentLetters.slice(0, 10).map((l) => (
                     <li key={l.id} className={styles.paperItem}>
                       <div>
-                        [{l.paperYear}] {l.paperTitle} · {l.paperOwnerName} 님에게 ·{' '}
+                        [{l.paperYear}] {l.paperTitle} · {l.paperOwnerName} ·{' '}
                         {l.createdAt.slice(0, 10)}
                       </div>
                       <div className={styles.sentLetterActions}>
@@ -295,12 +391,11 @@ export default function ProfileWindow() {
           </div>
         </div>
 
-        {/* 하단 가짜 배너 영역 */}
         <div className={styles.bannerStripBottom}>
-          <img src="/img/banner-unicorn-diary.png" alt="banner1" />
-          <img src="/img/banner-adopt-a-pet.png" alt="banner2" />
-          <img src="/img/banner-my-pixeled-world.png" alt="banner3" />
-          <img src="/img/banner-red-friends-oly.png" alt="banner4" />
+          <img src="/img/banner/banner-unicorn-diary.png" alt="banner1" />
+          <img src="/img/banner/banner-adopt-a-pet.png" alt="banner2" />
+          <img src="/img/banner/banner-my-pixeled-world.png" alt="banner3" />
+          <img src="/img/banner/banner-red-friends-oly.png" alt="banner4" />
         </div>
       </div>
     </div>

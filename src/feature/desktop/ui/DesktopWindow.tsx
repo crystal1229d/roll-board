@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode, useRef } from 'react';
-import { DesktopWindowState, useDesktopStore } from '../model/useDesktopStore';
 import WinWindow from '@/shared/ui/window/WinWindow';
+import { DesktopWindowState, useDesktopStore } from '../model/useDesktopStore';
 import styles from './DesktopWindow.module.css';
 
 type Props = {

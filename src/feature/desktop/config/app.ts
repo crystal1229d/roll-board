@@ -1,4 +1,11 @@
-export type DesktopAppId = 'profile' | 'board' | 'message' | 'info' | 'recycle' | 'logout';
+export type DesktopAppId =
+  | 'profile'
+  | 'board'
+  | 'paper'
+  | 'message'
+  | 'info'
+  | 'recycle'
+  | 'logout';
 
 export interface DesktopApp {
   id: DesktopAppId;

@@ -2,11 +2,8 @@
 
 import { useMyPaperSettings } from '@/feature/paper/hook/useMyPaperSettings';
 import { BG_TEXTURE_OPTIONS } from '@/feature/paper/config/bgTexture';
+import PaperPreviewBoard from './PaperPreviewBoard';
 import styles from './MyPaperSetting.module.css';
-import PaperPreviewBoard from '../my-paper/PaperPreviewBoard';
-import { findStickerDef, StickerTypeId } from '@/feature/paper/config/stickerCatalog';
-import { PaperStickerRow } from '@/entity/paper/type';
-import StickerPalette from './StickerPalette';
 
 export default function MyPaperSetting() {
   const {
@@ -16,14 +13,10 @@ export default function MyPaperSetting() {
     selectPaper,
     form,
     setForm,
-    stickersView,
-    addSticker,
-    moveSticker,
     loading,
     saving,
     error,
     save,
-    resetStickers,
   } = useMyPaperSettings();
 
   if (loading) {
@@ -53,13 +46,12 @@ export default function MyPaperSetting() {
     await save();
   };
 
-  const handleResetStickers = async () => {
-    const ok = window.confirm('이 롤링페이퍼의 스티커를 모두 삭제할까요?');
-    if (!ok) return;
-    await resetStickers();
-  };
+  const rawBg = form.bg_texture || 'texture_cork';
 
-  const currentBg = form.bg_texture || 'cork';
+  const isSolid = rawBg.startsWith('solid:');
+  const solidColor = isSolid ? rawBg.replace('solid:', '') : '#fff6e0';
+
+  const currentBg = rawBg;
 
   return (
     <div className={styles.page}>
@@ -99,10 +91,10 @@ export default function MyPaperSetting() {
                 value={form.theme ?? ''}
                 onChange={(e) => setForm('theme', e.target.value === '' ? '' : e.target.value)}
               >
-                <option value="">기본</option>
-                <option value="retro">레트로 컴퓨터</option>
-                <option value="pastel">파스텔 노트</option>
-                <option value="dark">다크 모드</option>
+                <option value="basic">기본</option>
+                <option value="retro">레트로</option>
+                <option value="kitsch">키치</option>
+                <option value="simple">심플</option>
               </select>
             </label>
 
@@ -113,29 +105,48 @@ export default function MyPaperSetting() {
                 <div className={styles.texturePreviewLabel}>현재 미리보기</div>
 
                 <PaperPreviewBoard
-                  theme={form.theme || 'pink'}
+                  theme={form.theme || 'basic'}
                   bgTexture={currentBg}
                   paperTitle={form.title || 'My Rollingpaper'}
-                  stickers={stickersView}
-                  onMoveSticker={moveSticker}
                 />
 
-                <StickerPalette onPick={(id) => addSticker(id as any)} />
-
                 <div className={styles.textureGroupTitle}>단색</div>
-                <div className={styles.textureGrid}>
-                  {BG_TEXTURE_OPTIONS.filter((t) => t.group === 'solid').map((t) => (
+                <div className={styles.colorPalette}>
+                  {[
+                    '#fff6e0', // 크림
+                    '#ffe1f0', // 핑크
+                    '#e0f0ff', // 하늘
+                    '#d6ffd8', // 민트
+                    '#fff3b0', // 옐로우
+                    '#e9ddff', // 라일락
+                    '#ffffff', // 화이트
+                    '#1a1a1a', // 다크
+                  ].map((hex) => (
                     <button
-                      key={t.id}
+                      key={hex}
                       type="button"
-                      className={`${styles.textureItem} ${
-                        currentBg === t.id ? styles.textureItemActive : ''
-                      } ${styles[`texture_${t.id}`]}`}
-                      onClick={() => setForm('bg_texture', t.id)}
-                    >
-                      <span className={styles.textureLabel}>{t.label}</span>
-                    </button>
+                      className={`${styles.colorSwatch} ${
+                        solidColor === hex ? styles.colorSwatchActive : ''
+                      }`}
+                      style={{ backgroundColor: hex }}
+                      onClick={() => setForm('bg_texture', `solid:${hex}`)}
+                      aria-label={`bg color ${hex}`}
+                    />
                   ))}
+                </div>
+
+                {/* ✅ 사용자가 직접 고르기 */}
+                <div className={styles.colorPickerRow}>
+                  <label className={styles.colorPickerLabel}>
+                    <span>직접 선택</span>
+                    <input
+                      type="color"
+                      value={solidColor}
+                      onChange={(e) => setForm('bg_texture', `solid:${e.target.value}`)}
+                    />
+                  </label>
+
+                  <div className={styles.colorHex}>{solidColor.toUpperCase()}</div>
                 </div>
 
                 <div className={styles.textureGroupTitle}>패턴</div>
@@ -154,17 +165,20 @@ export default function MyPaperSetting() {
                   ))}
                 </div>
 
-                <div className={styles.textureGroupTitle}>기본 코르크</div>
+                <div className={styles.textureGroupTitle}>텍스쳐</div>
                 <div className={styles.textureGrid}>
-                  <button
-                    type="button"
-                    className={`${styles.textureItem} ${
-                      currentBg === 'cork' ? styles.textureItemActive : ''
-                    } ${styles.texture_cork}`}
-                    onClick={() => setForm('bg_texture', 'cork')}
-                  >
-                    <span className={styles.textureLabel}>코르크</span>
-                  </button>
+                  {BG_TEXTURE_OPTIONS.filter((t) => t.group === 'texture').map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`${styles.textureItem} ${
+                        currentBg === t.id ? styles.textureItemActive : ''
+                      } ${styles[`texture_${t.id}`]}`}
+                      onClick={() => setForm('bg_texture', t.id)}
+                    >
+                      <span className={styles.textureLabel}>{t.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -184,26 +198,6 @@ export default function MyPaperSetting() {
               {saving ? '★ Saving… ★' : '★ Save Rollingpaper ★'}
             </button>
           </form>
-
-          {/* 스티커 관리 */}
-          <div className={styles.stickerBox}>
-            <div className={styles.stickerHeader}>
-              <span>★ 스티커 관리 (paper_stickers)</span>
-              <button
-                type="button"
-                className={styles.resetStickerBtn}
-                onClick={handleResetStickers}
-                disabled={saving}
-              >
-                스티커 모두 삭제
-              </button>
-            </div>
-            <p className={styles.stickerInfo}>
-              현재 스티커 개수: {current.stickers.length}개
-              <br />* 드래그로 위치/회전 등을 편집하는 에디터는 나중에 붙여도 되고, 지금은 초기화만
-              지원해요.
-            </p>
-          </div>
         </div>
       </div>
     </div>
