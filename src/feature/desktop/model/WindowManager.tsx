@@ -1,11 +1,13 @@
 'use client';
 
-import ProfileWindow from '@/widget/profile/ProfileWindow';
-import MessageWindow from '@/widget/message/MessageWindow';
+import { useDesktopStore } from './useDesktopStore';
 import PaperWindow from '@/widget/paper/PaperWindow';
 import PaperDetailWindow from '@/widget/paper/PaperDetailWindow';
+import ProfileWindow from '@/widget/profile/ProfileWindow';
+import MessageWindow from '@/widget/message/MessageWindow';
+import LetterComposerWindow from '@/widget/letter/LetterComposerWindow';
+import LetterDetailWindow from '@/widget/letter/LetterDetailWindow';
 import DesktopWindow from '../ui/DesktopWindow';
-import { useDesktopStore } from './useDesktopStore';
 
 export default function WindowManager() {
   const windows = useDesktopStore((s) => s.windows);
@@ -15,24 +17,51 @@ export default function WindowManager() {
       {windows
         .filter((w) => !w.minimized)
         .map((w) => {
-          let content = null;
-          if (w.type === 'board') content = <PaperWindow />;
+          const p = w.payload;
+          let content: React.ReactNode = null;
 
-          if (w.type === 'paper') {
-            const slug = w.payload?.paperSlug;
-            content = slug ? <PaperDetailWindow paperSlug={slug} /> : <div>잘못된 paperSlug</div>;
+          switch (p.type) {
+            case 'board':
+              content = <PaperWindow />;
+              break;
+
+            case 'paper':
+              content = <PaperDetailWindow paperSlug={p.paperSlug} />;
+              break;
+
+            case 'profile':
+              content =
+                p.mode === 'me' ? (
+                  <ProfileWindow mode="me" />
+                ) : (
+                  <ProfileWindow mode="user" userId={p.userId} />
+                );
+              break;
+
+            case 'message':
+              content = <MessageWindow />;
+              break;
+
+            case 'letterComposer':
+              content = (
+                <LetterComposerWindow
+                  paperId={p.paperId}
+                  paperTitle={p.paperTitle}
+                  paperSlug={p.paperSlug}
+                  windowId={w.id}
+                />
+              );
+              break;
+
+            case 'letterDetail':
+              content = (
+                <LetterDetailWindow letterId={p.letterId} paperSlug={p.paperSlug} windowId={w.id} />
+              );
+              break;
+
+            default:
+              content = <div>Unknown window</div>;
           }
-
-          if (w.type === 'profile') {
-            const userId = w.payload?.userId;
-            content = userId ? (
-              <ProfileWindow mode="user" userId={userId} />
-            ) : (
-              <ProfileWindow mode="me" />
-            );
-          }
-
-          if (w.type === 'message') content = <MessageWindow />;
 
           return (
             <DesktopWindow key={w.id} win={w}>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useDesktopStore } from '../model/useDesktopStore';
 import { useAuth } from '@/feature/auth/hook/useAuth';
-import { DesktopAppId, DESKTOP_APPS } from '../config/app';
+import { DESKTOP_APPS, type DesktopAppId } from '../config/app';
 import DesktopFooter from '@/shared/layout/footer/DesktopFooter';
 import styles from './Taskbar.module.css';
 
@@ -13,7 +13,7 @@ export default function Taskbar() {
   const { logout, loadingLogout } = useAuth();
 
   const windows = useDesktopStore((s) => s.windows);
-  const openWindow = useDesktopStore((s) => s.openWindow);
+  const openApp = useDesktopStore((s) => s.openApp);
   const toggleMinimize = useDesktopStore((s) => s.toggleMinimize);
   const bringToFront = useDesktopStore((s) => s.bringToFront);
 
@@ -22,31 +22,19 @@ export default function Taskbar() {
 
   const startMenuApps = DESKTOP_APPS.filter((a) => a.showInStartMenu);
 
-  /* ─────────────────────────────
-     Taskbar 창 버튼 클릭 로직
-     - 열려 있는 창(visible)  클릭 → minimize
-     - 최소화된 창(minimized) 클릭 → restore(최소화 해제 + bringToFront)
-  ───────────────────────────── */
   const handleClickTaskbarWindow = (id: string) => {
     const target = windows.find((w) => w.id === id);
     if (!target) return;
 
     if (target.minimized) {
-      // 최소화된 창 → 다시 보여주기
       toggleMinimize(target.id);
       bringToFront(target.id);
     } else {
-      // 열려 있는 창 → 최소화
       toggleMinimize(target.id);
     }
   };
 
-  /* ─────────────────────────────
-     START 버튼 / 메뉴
-  ───────────────────────────── */
-  const handleStartClick = () => {
-    setIsStartOpen((prev) => !prev);
-  };
+  const handleStartClick = () => setIsStartOpen((prev) => !prev);
 
   const handleStartMenuClick = async (action: StartMenuAction) => {
     setIsStartOpen(false);
@@ -56,12 +44,9 @@ export default function Taskbar() {
       return;
     }
 
-    openWindow(action);
+    openApp(action);
   };
 
-  /* ─────────────────────────────
-     시계 (YYYY-MM-DD HH:mm)
-  ───────────────────────────── */
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -97,20 +82,31 @@ export default function Taskbar() {
             <button
               key={app.id}
               className={styles.startMenuItem}
-              onClick={() => handleStartMenuClick(app.id as StartMenuAction)}
+              onClick={() => handleStartMenuClick(app.id)}
               disabled={app.id === 'logout' && loadingLogout}
             >
               <img src={app.iconSrc} alt={app.label} width={25} />
               {app.startMenuLabel ?? app.label}
             </button>
           ))}
+
+          {/* logout 항목이 DESKTOP_APPS에 없다면 여기서 추가 */}
+          <button
+            className={styles.startMenuItem}
+            onClick={() => handleStartMenuClick('logout')}
+            disabled={loadingLogout}
+          >
+            <img src="/icon/shutdown.png" alt="Logout" width={25} />
+            Logout
+          </button>
         </div>
       </div>
 
-      {/* 열린 창 목록 (Taskbar 버튼들) */}
+      {/* 열린 창 목록 */}
       <div className={styles.windowList}>
         {windows.map((w) => {
-          const app = DESKTOP_APPS.find((a) => a.id === w.type);
+          // ✅ w.type 대신 w.payload.type
+          const app = DESKTOP_APPS.find((a) => a.id === w.payload.type);
 
           return (
             <button
@@ -119,7 +115,7 @@ export default function Taskbar() {
               onClick={() => handleClickTaskbarWindow(w.id)}
             >
               {app && <img src={app.iconSrc} width={16} alt={app.label} />}
-              <span className={styles.label}>{w.title ?? w.type}</span>
+              <span className={styles.label}>{w.title ?? w.payload.type}</span>
             </button>
           );
         })}

@@ -3,15 +3,60 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
 import { useMyUserId } from '@/shared/hook/useMyUserId';
-import type {
-  LetterWithWriter,
-  MyLetterState,
-  PaperDetail,
-  PaperWithOwner,
-} from '../type/paperDetail';
+import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
+
+export type PaperWithOwner = {
+  id: string;
+  title: string;
+  slug: string;
+  year: number;
+  created_at: string | null;
+  theme: string | null;
+  bg_texture: string | null;
+  is_published: boolean | null;
+  owner_id: string;
+  owner?: {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+    intro: string | null;
+  } | null;
+};
+
+export type LetterWithWriter = {
+  id: string;
+  content: string;
+  created_at: string | null;
+  updated_at: string | null;
+  paper_id: string;
+  writer_id: string;
+  writer_name: string | null;
+  is_anonymous: boolean | null;
+
+  teaser_title: string | null;
+  teaser_sticker_type: string | null; // ✅ 추가
+  teaser_x: number | null;
+  teaser_y: number | null;
+  teaser_scale: number | null;
+  teaser_rotation: number | null;
+
+  writer?: {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+  } | null;
+};
+
+export type PaperDetail = {
+  paper: PaperWithOwner;
+  letters: LetterWithWriter[];
+};
+
+export type MyLetterState = { status: 'none' } | { status: 'sent'; letter: LetterWithWriter };
 
 export function usePaperDetail(paperSlug: string) {
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+  const nonce = useDesktopStore((s) => s.paperRefreshNonce);
   const myUserId = useMyUserId();
 
   const [data, setData] = useState<PaperDetail | null>(null);
@@ -20,95 +65,87 @@ export function usePaperDetail(paperSlug: string) {
 
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
 
-  const fetchDetail = useCallback(async () => {
-    const currentYear = new Date().getFullYear();
-
-    // 1) paper
-    const { data: paperData, error: paperError } = await supabase
-      .from('papers')
-      .select(
-        `
-          id, title, slug, year, created_at, theme, bg_texture, is_published, owner_id,
-          owner:profiles ( id, display_name, avatar_url, intro )
-        `,
-      )
-      .eq('slug', paperSlug)
-      .eq('year', currentYear)
-      .eq('is_published', true)
-      .maybeSingle();
-
-    if (paperError) throw paperError;
-
-    if (!paperData) {
-      setData(null);
-      setMyLetter({ status: 'none' });
-      setIsOwner(false);
-      return;
-    }
-
-    const paper = paperData as PaperWithOwner;
-    const owner = !!(myUserId && paper.owner_id === myUserId);
-
-    // 2) letters
-    const { data: lettersData, error: lettersError } = await supabase
-      .from('letters')
-      .select(
-        `
-          id, content, created_at, updated_at, paper_id,
-          writer_id, writer_name, is_anonymous,
-          teaser_title, teaser_x, teaser_y, teaser_scale, teaser_rotation,
-          writer:profiles ( id, display_name, avatar_url )
-        `,
-      )
-      .eq('paper_id', paper.id)
-      .order('created_at', { ascending: true });
-
-    if (lettersError) throw lettersError;
-
-    const letters = (lettersData ?? []) as LetterWithWriter[];
-
-    // 3) my letter
-    const mine = myUserId ? letters.find((l) => l.writer_id === myUserId) : undefined;
-
-    setData({ paper, letters });
-    setIsOwner(owner);
-    setMyLetter(mine ? { status: 'sent', letter: mine } : { status: 'none' });
-  }, [supabase, paperSlug, myUserId]);
+  const refresh = useCallback(() => setRefreshTick((v) => v + 1), []);
 
   useEffect(() => {
+    if (!myUserId) return;
+
     let alive = true;
 
     const run = async () => {
       try {
         setLoading(true);
         setErrorMsg(null);
-        await fetchDetail();
+
+        const currentYear = new Date().getFullYear();
+
+        // 1) paper (+ owner join)
+        const paperRes = await supabase
+          .from('papers')
+          .select(
+            `
+            id, title, slug, year, created_at, theme, bg_texture, is_published, owner_id,
+            owner:profiles ( id, display_name, avatar_url, intro )
+          `,
+          )
+          .eq('slug', paperSlug)
+          .eq('year', currentYear)
+          .maybeSingle();
+
+        if (paperRes.error) throw paperRes.error;
+        if (!paperRes.data) {
+          if (alive) {
+            setData(null);
+            setIsOwner(false);
+            setMyLetter({ status: 'none' });
+          }
+          return;
+        }
+
+        const paper = paperRes.data as unknown as PaperWithOwner;
+        const owner = paper.owner_id === myUserId;
+        if (alive) setIsOwner(owner);
+
+        // 2) letters (+ writer join)
+        const lettersRes = await supabase
+          .from('letters')
+          .select(
+            `
+            id, content, created_at, updated_at, paper_id,
+            writer_id, writer_name, is_anonymous,
+            teaser_title, teaser_sticker_type, teaser_x, teaser_y, teaser_scale, teaser_rotation,
+            writer:profiles ( id, display_name, avatar_url )
+          `,
+          )
+          .eq('paper_id', paper.id)
+          .order('created_at', { ascending: true });
+
+        if (lettersRes.error) throw lettersRes.error;
+
+        const letters = (lettersRes.data ?? []) as unknown as LetterWithWriter[];
+
+        // 3) 내가 쓴 편지 찾기
+        const mine = letters.find((l) => l.writer_id === myUserId);
+
+        if (alive) {
+          setData({ paper, letters });
+          setMyLetter(mine ? { status: 'sent', letter: mine } : { status: 'none' });
+        }
       } catch (e) {
-        if (!alive) return;
-        setErrorMsg((e as Error).message ?? '불러오는 중 오류가 발생했어요.');
+        if (alive) setErrorMsg((e as Error).message ?? '불러오기 실패');
       } finally {
-        // eslint-disable-next-line no-unsafe-finally
-        if (!alive) return;
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
-    run();
+    void run();
 
     return () => {
       alive = false;
     };
-  }, [fetchDetail]);
-
-  const refresh = useCallback(async () => {
-    try {
-      setErrorMsg(null);
-      await fetchDetail();
-    } catch (e) {
-      setErrorMsg((e as Error).message ?? '새로고침 중 오류가 발생했어요.');
-    }
-  }, [fetchDetail]);
+  }, [supabase, paperSlug, myUserId, nonce, refreshTick]);
 
   return { data, myLetter, isOwner, loading, error: errorMsg, refresh };
 }

@@ -1,15 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { usePaperDetail } from '@/feature/paper/hook/usePaperDetail';
-import LetterComposer from '../letter/LetterComposer';
+import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
+import { findStickerDef } from '@/entity/sticker/model/catalog';
 import styles from './PaperDetailPage.module.css';
 
 type Props = { paperSlug: string };
 
+const hashToInt = (s: string) => {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+};
+
+const makeRng = (seed: number) => {
+  return () => {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
 export default function PaperDetailPage({ paperSlug }: Props) {
-  const { data, myLetter, isOwner, loading, error, refresh } = usePaperDetail(paperSlug);
-  const [openCompose, setOpenCompose] = useState(false);
+  const { data, myLetter, isOwner, loading, error } = usePaperDetail(paperSlug);
+  const openWindow = useDesktopStore((s) => s.openWindow);
+
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const openComposer = useCallback(() => {
+    if (!data) return;
+    openWindow({
+      type: 'letterComposer',
+      paperId: data.paper.id,
+      paperTitle: data.paper.title,
+      paperSlug: data.paper.slug,
+    });
+  }, [openWindow, data]);
+
+  const openMyLetterDetail = useCallback(() => {
+    if (myLetter.status !== 'sent') return;
+    openWindow({
+      type: 'letterDetail',
+      letterId: myLetter.letter.id,
+      paperSlug,
+    });
+  }, [openWindow, myLetter, paperSlug]);
+
+  const openLetterDetail = useCallback(
+    (letterId: string) => {
+      openWindow({ type: 'letterDetail', letterId, paperSlug });
+    },
+    [openWindow, paperSlug],
+  );
+
+  const copySlug = useCallback(async () => {
+    const slug = data?.paper?.slug;
+    if (!slug) return;
+
+    try {
+      await navigator.clipboard.writeText(slug);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 900);
+    } catch {
+      // noop
+    }
+  }, [data]);
+
+  const sortedLetters = useMemo(() => {
+    const arr = data?.letters ?? [];
+    return [...arr].sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      if (ta !== tb) return ta - tb;
+      return a.id.localeCompare(b.id);
+    });
+  }, [data?.letters]);
+
+  // rotate만 고정 생성 (x/y/scale 무시)
+  const rotationMap = useMemo(() => {
+    if (!data) return new Map<string, number>();
+    const seed = hashToInt(`${data.paper.slug}:${data.paper.year}`);
+    const rng = makeRng(seed);
+
+    const map = new Map<string, number>();
+    for (const l of sortedLetters) {
+      const rot = Math.round((rng() * 10 - 5) * 10) / 10; // -5~+5deg
+      map.set(l.id, rot);
+    }
+    return map;
+  }, [data, sortedLetters]);
+
+  const moveToMyLetter = useCallback(() => {
+    if (myLetter.status !== 'sent') return;
+    const id = myLetter.letter.id;
+
+    const el = scrollRef.current?.querySelector<HTMLElement>(`[data-letter-id="${id}"]`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setHighlightId(id);
+    window.setTimeout(() => setHighlightId(null), 1200);
+  }, [myLetter]);
 
   if (loading) {
     return (
@@ -35,159 +133,161 @@ export default function PaperDetailPage({ paperSlug }: Props) {
     );
   }
 
-  const { paper, letters } = data;
+  const { paper } = data;
+
+  const canWrite = !isOwner && myLetter.status === 'none';
+  const hasMyLetter = !isOwner && myLetter.status === 'sent';
 
   return (
     <div className={styles.page}>
       <div className={styles.window}>
         <div className={styles.titleBar}>
-          ★ {paper.year} · {paper.title} ★
+          ★ Rollingpaper ★
           <span className={styles.ownerText}>— by {paper.owner?.display_name ?? 'Unknown'}</span>
         </div>
 
         <div className={styles.body}>
-          <div className={styles.layout}>
-            {/* 왼쪽: 코르크보드 */}
-            <div className={styles.boardOuter}>
-              <div className={styles.boardInner}>
-                <div className={styles.boardHeader}>
-                  <div className={styles.paperMeta}>
-                    <span className={styles.metaLabel}>SLUG</span>
-                    <span className={styles.metaValue}>{paper.slug}</span>
-                  </div>
-                  <div className={styles.paperMeta}>
-                    <span className={styles.metaLabel}>CREATED</span>
-                    <span className={styles.metaValue}>
-                      {paper.created_at?.slice(0, 10) ?? '????-??-??'}
-                    </span>
-                  </div>
+          <div className={styles.boardOuter}>
+            <section className={styles.boardInner}>
+              {/* 상단: THENCE 느낌 명판 + 우측 액션 */}
+              <header className={styles.boardHeader}>
+                <div className={styles.topActions}>
+                  {/* slug copy -> 우측 상단 액션으로 이동 */}
+                  <button
+                    type="button"
+                    className={`${styles.chipBtn} ${copied ? styles.chipCopied : ''}`}
+                    onClick={copySlug}
+                    title="슬러그 복사"
+                  >
+                    {copied ? '✅ copied' : '🔗 slug'}
+                  </button>
 
-                  {/* ✅ 내 보드 표시 */}
-                  {isOwner && <div className={styles.ownerBadge}>★ MY BOARD ★</div>}
+                  {canWrite && (
+                    <button
+                      type="button"
+                      className={styles.iconBtn}
+                      onClick={openComposer}
+                      title="편지 쓰기"
+                    >
+                      ✉
+                    </button>
+                  )}
+
+                  {hasMyLetter && (
+                    <>
+                      <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={openMyLetterDetail}
+                        title="내가 보낸 편지 보기"
+                      >
+                        📖
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.iconBtn}
+                        onClick={moveToMyLetter}
+                        title="내 편지로 이동"
+                      >
+                        📍
+                      </button>
+                    </>
+                  )}
+
+                  {isOwner && <span className={styles.ownerBadgeTiny}>MY</span>}
                 </div>
 
-                <div className={styles.pinArea}>
-                  {letters.length === 0 ? (
-                    <div className={styles.emptyNote}>아직 편지가 없어요 ✉</div>
-                  ) : (
-                    letters.map((l) => {
+                <div className={styles.plateWrap}>
+                  {/* left/right deco -> 스티커 이미지 */}
+                  <img
+                    className={styles.plateStickerLeft}
+                    src="/img/sticker/heart-pink-glitter-loveya.png"
+                    alt=""
+                    draggable={false}
+                  />
+                  <img
+                    className={styles.plateStickerRight}
+                    src="/img/sticker/star-blue.png"
+                    alt=""
+                    draggable={false}
+                  />
+
+                  <div className={styles.titlePlate}>
+                    <div className={styles.platePins}>
+                      <span className={styles.pinDot} />
+                      <span className={styles.pinDot} />
+                    </div>
+
+                    <div className={styles.titleRow}>
+                      <h1 className={styles.boardTitle}>{paper.title}</h1>
+                      <span className={styles.boardYear}>{paper.year}</span>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              {/* ✅ (2) header 아래 border 구분선 */}
+              <div className={styles.headerDivider} />
+
+              {/* 스크롤 영역(그리드) */}
+              <div ref={scrollRef} className={styles.boardScroll}>
+                {sortedLetters.length === 0 ? (
+                  <div className={styles.emptyNote}>아직 편지가 없어요 ✉</div>
+                ) : (
+                  <div className={styles.grid}>
+                    {sortedLetters.map((l) => {
                       const writerLabel = l.is_anonymous
                         ? 'Anonymous'
                         : l.writer?.display_name ?? l.writer_name ?? 'Unknown';
 
-                      const teaserX = l.teaser_x ?? 30;
-                      const teaserY = l.teaser_y ?? 30;
-                      const rot = l.teaser_rotation ?? 0;
+                      const isMine = myLetter.status === 'sent' && myLetter.letter.id === l.id;
+                      const isHighlight = highlightId === l.id;
+                      const rot = rotationMap.get(l.id) ?? 0;
+
+                      const stickerDef =
+                        findStickerDef(l.teaser_sticker_type) ?? findStickerDef('smile');
 
                       return (
                         <button
                           key={l.id}
                           type="button"
-                          className={styles.note}
-                          style={{
-                            left: `${Math.max(0, Math.min(85, teaserX))}%`,
-                            top: `${Math.max(0, Math.min(85, teaserY))}%`,
-                            transform: `rotate(${rot}deg)`,
-                          }}
-                          onClick={() => {
-                            // TODO: 다음 단계에서 상세/모달 연결
-                          }}
+                          data-letter-id={l.id}
+                          className={[
+                            styles.note,
+                            isMine ? styles.myNote : '',
+                            isHighlight ? styles.flash : '',
+                          ].join(' ')}
+                          style={
+                            {
+                              // 기본 회전
+                              ['--rot' as any]: `${rot}deg`,
+                            } as React.CSSProperties
+                          }
+                          onClick={() => openLetterDetail(l.id)}
+                          title="편지 보기"
                         >
-                          <div className={styles.notePin} />
+                          {/* (3) “종이가 들린 느낌”을 위해 위에 종이 레이어가 있음 */}
+                          <span className={styles.paperLift} aria-hidden />
+
+                          {stickerDef && (
+                            <img
+                              className={styles.stickerImg}
+                              src={stickerDef.src}
+                              alt={stickerDef.label}
+                              draggable={false}
+                            />
+                          )}
+
                           <div className={styles.noteTitle}>{l.teaser_title ?? 'LETTER'}</div>
                           <div className={styles.noteWriter}>{writerLabel}</div>
-                          <div className={styles.noteDate}>{l.created_at?.slice(0, 10) ?? ''}</div>
+                          {isMine && <div className={styles.myBadge}>MY</div>}
                         </button>
                       );
-                    })
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* 오른쪽 패널 */}
-            <aside className={styles.sidePanel}>
-              <div className={styles.panelTitle}>★ Letters List</div>
-
-              {letters.length === 0 ? (
-                <div className={styles.panelEmpty}>표시할 편지가 없어요.</div>
-              ) : (
-                <ul className={styles.letterList}>
-                  {letters.map((l) => {
-                    const writerLabel = l.is_anonymous
-                      ? 'Anonymous'
-                      : l.writer?.display_name ?? l.writer_name ?? 'Unknown';
-
-                    return (
-                      <li key={l.id} className={styles.letterItem}>
-                        <div className={styles.letterRowTop}>
-                          <span className={styles.letterWriter}>{writerLabel}</span>
-                          <span className={styles.letterDate}>{l.created_at?.slice(0, 10)}</span>
-                        </div>
-                        <div className={styles.letterPreview}>
-                          {l.content.length > 80 ? `${l.content.slice(0, 80)}…` : l.content}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-              {/* ✅ Footer 분기 */}
-              <div className={styles.panelFooter}>
-                {/* 🔥 내 보드면 “편지쓰기” 자체가 없어야 함 */}
-                {isOwner ? (
-                  <div className={styles.ownerFooterHint}>내 롤링페이퍼입니다.</div>
-                ) : (
-                  <>
-                    {myLetter.status === 'none' && (
-                      <button
-                        type="button"
-                        className={styles.primaryBtn}
-                        onClick={() => setOpenCompose(true)}
-                      >
-                        ✉ 이 롤링페이퍼에 편지 쓰기
-                      </button>
-                    )}
-
-                    {!isOwner && myLetter.status === 'sent' && (
-                      <>
-                        <button
-                          type="button"
-                          className={styles.primaryBtn}
-                          onClick={() => {
-                            // 내 편지 상세/수정
-                          }}
-                        >
-                          📖 내가 보낸 편지 보기
-                        </button>
-
-                        <button
-                          type="button"
-                          className={styles.dangerBtn}
-                          onClick={() => {
-                            // 삭제 confirm → delete
-                          }}
-                        >
-                          🗑 편지 삭제
-                        </button>
-                      </>
-                    )}
-                  </>
+                    })}
+                  </div>
                 )}
               </div>
-
-              {openCompose && (
-                <LetterComposer
-                  paperId={paper.id}
-                  paperTitle={paper.title}
-                  onClose={() => setOpenCompose(false)}
-                  onSaved={() => {
-                    refresh();
-                  }}
-                />
-              )}
-            </aside>
+            </section>
           </div>
         </div>
       </div>

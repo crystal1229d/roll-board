@@ -111,9 +111,9 @@ export default function DesktopWindow({ win, children }: Props) {
       onMouseDown={() => bringToFront(win.id)}
     >
       <WinWindow
-        osTitle={win.type.toUpperCase()}
-        browserTitle={`Roll✶Board – ${win.type}`}
-        address={`http://roll-board.cyber/${win.type}.htm`}
+        osTitle={win.title.toUpperCase()}
+        browserTitle={`Roll✶Board – ${win.title}`}
+        address={`http://roll-board.cyber/${win.payload.type}.htm`}
         statusLeft="Opening page..."
         statusRight={win.minimized ? 'Minimized' : 'Online 97%'}
         onTitleBarMouseDown={onMouseDownTitleBar}

@@ -1,7 +1,7 @@
 import { createServerSideClient } from '@/shared/lib/supabase/supabase';
 import { TablesInsert } from '@/shared/type';
-import { mapLetterRowToLetter } from '../lib';
-import { CreateLetterInput } from '../type';
+import { mapLetterRowToLetter, mapLetterWithWriterRowToLetter } from '../lib';
+import { CreateLetterInput, LetterWithWriterRow } from '../type';
 
 /**
  * 특정 paper에 달린 전체 편지 목록
@@ -17,13 +17,21 @@ export const getLettersByPaperId = async ({
 
   const { data, error } = await supabase
     .from('letters')
-    .select('*')
+    .select(
+      `
+      *,
+      writer:profiles(
+        id,
+        display_name
+      )
+    `,
+    )
     .eq('paper_id', paperId)
     .order('created_at', { ascending: true });
 
   if (error || !data) return [];
 
-  return data.map(mapLetterRowToLetter);
+  return (data as LetterWithWriterRow[]).map(mapLetterWithWriterRowToLetter);
 };
 
 /**
