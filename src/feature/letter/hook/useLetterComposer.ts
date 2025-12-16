@@ -6,8 +6,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseBrowserClient } from '@/shared/lib/supabase/supabase-client';
 import type { Database, TablesInsert } from '@/shared/type/supabase';
 import { useMyUserId } from '@/shared/hook/useMyUserId';
+
 import type { LetterStickerDraft, LetterStyleDraft } from '@/entity/letter/type';
-import { StickerTypeId } from '@/entity/sticker';
+import type { StickerTypeId } from '@/entity/sticker';
 
 type LetterInsert = TablesInsert<'letters'>;
 type LetterStyleInsert = TablesInsert<'letter_styles'>;
@@ -78,12 +79,14 @@ export function useLetterComposer() {
       if (insertError) throw insertError;
       const letterId = inserted.id;
 
+      // ✅ style draft -> DB row mapping
       if (payload.style) {
         const styleRow: LetterStyleInsert = {
           letter_id: letterId,
-          note_color: payload.style.note_color ?? null,
-          font_family: payload.style.font_family ?? null,
-          extra: (payload.style.extra ?? null) as any,
+          note_color: payload.style.noteColor ?? null,
+          text_color: payload.style.textColor ?? null,
+          font_family: payload.style.fontFamily ?? null,
+          extra: { pattern: payload.style.pattern } as any,
           updated_at: new Date().toISOString(),
         };
 
@@ -94,11 +97,12 @@ export function useLetterComposer() {
         if (styleError) throw styleError;
       }
 
+      // ✅ sticker draft -> DB row mapping
       const stickers = payload.stickers ?? [];
       if (stickers.length > 0) {
         const stickerRows: LetterStickerInsert[] = stickers.map((s) => ({
           letter_id: letterId,
-          sticker_type: s.sticker_type,
+          sticker_type: s.stickerType, // ✅ sticker_type 아님
           x: s.x,
           y: s.y,
           rotation: s.rotation ?? 0,

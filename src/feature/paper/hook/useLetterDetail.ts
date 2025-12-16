@@ -52,7 +52,7 @@ export function useLetterDetail(letterId: string) {
   }, [client, letterId]);
 
   useEffect(() => {
-    void fetchOne();
+    fetchOne();
   }, [fetchOne]);
 
   const updateContent = useCallback(

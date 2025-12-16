@@ -34,7 +34,7 @@ export type LetterWithWriter = {
   is_anonymous: boolean | null;
 
   teaser_title: string | null;
-  teaser_sticker_type: string | null; // ✅ 추가
+  teaser_sticker_type: string | null;
   teaser_x: number | null;
   teaser_y: number | null;
   teaser_scale: number | null;
@@ -67,34 +67,44 @@ export function usePaperDetail(paperSlug: string) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
 
-  const refresh = useCallback(() => setRefreshTick((v) => v + 1), []);
+  const refresh = useCallback(() => {
+    setRefreshTick((v) => v + 1);
+  }, []);
 
   useEffect(() => {
-    if (!myUserId) return;
-
     let alive = true;
 
     const run = async () => {
+      if (!myUserId) {
+        if (alive) {
+          setData(null);
+          setIsOwner(false);
+          setMyLetter({ status: 'none' });
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         setLoading(true);
         setErrorMsg(null);
 
         const currentYear = new Date().getFullYear();
 
-        // 1) paper (+ owner join)
         const paperRes = await supabase
           .from('papers')
           .select(
             `
-            id, title, slug, year, created_at, theme, bg_texture, is_published, owner_id,
-            owner:profiles ( id, display_name, avatar_url, intro )
-          `,
+              id, title, slug, year, created_at, theme, bg_texture, is_published, owner_id,
+              owner:profiles ( id, display_name, avatar_url, intro )
+            `,
           )
           .eq('slug', paperSlug)
           .eq('year', currentYear)
           .maybeSingle();
 
         if (paperRes.error) throw paperRes.error;
+
         if (!paperRes.data) {
           if (alive) {
             setData(null);
@@ -106,18 +116,16 @@ export function usePaperDetail(paperSlug: string) {
 
         const paper = paperRes.data as unknown as PaperWithOwner;
         const owner = paper.owner_id === myUserId;
-        if (alive) setIsOwner(owner);
 
-        // 2) letters (+ writer join)
         const lettersRes = await supabase
           .from('letters')
           .select(
             `
-            id, content, created_at, updated_at, paper_id,
-            writer_id, writer_name, is_anonymous,
-            teaser_title, teaser_sticker_type, teaser_x, teaser_y, teaser_scale, teaser_rotation,
-            writer:profiles ( id, display_name, avatar_url )
-          `,
+              id, content, created_at, updated_at, paper_id,
+              writer_id, writer_name, is_anonymous,
+              teaser_title, teaser_sticker_type, teaser_x, teaser_y, teaser_scale, teaser_rotation,
+              writer:profiles ( id, display_name, avatar_url )
+            `,
           )
           .eq('paper_id', paper.id)
           .order('created_at', { ascending: true });
@@ -125,11 +133,10 @@ export function usePaperDetail(paperSlug: string) {
         if (lettersRes.error) throw lettersRes.error;
 
         const letters = (lettersRes.data ?? []) as unknown as LetterWithWriter[];
-
-        // 3) 내가 쓴 편지 찾기
         const mine = letters.find((l) => l.writer_id === myUserId);
 
         if (alive) {
+          setIsOwner(owner);
           setData({ paper, letters });
           setMyLetter(mine ? { status: 'sent', letter: mine } : { status: 'none' });
         }
@@ -140,7 +147,7 @@ export function usePaperDetail(paperSlug: string) {
       }
     };
 
-    void run();
+    run();
 
     return () => {
       alive = false;

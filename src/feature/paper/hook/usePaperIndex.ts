@@ -78,14 +78,12 @@ export function usePaperIndex() {
           .filter((v): v is PaperIndexItem => v !== null);
 
         // 유저당 1개(가장 최신 created_at)
-        const byUser = new Map<string, PaperIndexItem>();
-        for (const item of raw) {
-          if (!byUser.has(item.userId)) byUser.set(item.userId, item);
-        }
-
-        const deduped = Array.from(byUser.values()).sort((a, b) =>
-          a.displayName.localeCompare(b.displayName, 'ko'),
-        );
+        const deduped = Object.values(
+          raw.reduce<Record<string, PaperIndexItem>>((acc, item) => {
+            if (!acc[item.userId]) acc[item.userId] = item;
+            return acc;
+          }, {}),
+        ).sort((a, b) => a.displayName.localeCompare(b.displayName, 'ko'));
 
         if (alive) setItems(deduped);
       } catch (e) {
