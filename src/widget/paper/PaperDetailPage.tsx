@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { usePaperDetail } from '@/feature/paper/hook/usePaperDetail';
 import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
 import { findStickerDef } from '@/entity/sticker/model/catalog';
+import { FaPenNib, FaBookmark, FaMapPin, FaLink } from 'react-icons/fa';
 import styles from './PaperDetailPage.module.css';
 
 type Props = { paperSlug: string };
@@ -83,7 +84,6 @@ export default function PaperDetailPage({ paperSlug }: Props) {
     });
   }, [data?.letters]);
 
-  // rotate만 고정 생성 (x/y/scale 무시)
   const rotationMap = useMemo(() => {
     if (!data) return new Map<string, number>();
     const seed = hashToInt(`${data.paper.slug}:${data.paper.year}`);
@@ -149,27 +149,27 @@ export default function PaperDetailPage({ paperSlug }: Props) {
         <div className={styles.body}>
           <div className={styles.boardOuter}>
             <section className={styles.boardInner}>
-              {/* 상단: THENCE 느낌 명판 + 우측 액션 */}
+              {/* 상단: 명판 + 우측 액션 */}
               <header className={styles.boardHeader}>
                 <div className={styles.topActions}>
-                  {/* slug copy -> 우측 상단 액션으로 이동 */}
                   <button
                     type="button"
-                    className={`${styles.chipBtn} ${copied ? styles.chipCopied : ''}`}
+                    className={`${styles.pinChip} ${copied ? styles.pinChipCopied : ''}`}
                     onClick={copySlug}
                     title="슬러그 복사"
                   >
-                    {copied ? '✅ copied' : '🔗 slug'}
+                    <FaLink />
+                    <span className={styles.pinChipText}>{copied ? 'copied' : 'share'}</span>
                   </button>
 
                   {canWrite && (
                     <button
                       type="button"
-                      className={styles.iconBtn}
+                      className={`${styles.pinBtn} ${styles.pinBtnTilt}`}
                       onClick={openComposer}
                       title="편지 쓰기"
                     >
-                      ✉
+                      <FaPenNib />
                     </button>
                   )}
 
@@ -177,19 +177,19 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                     <>
                       <button
                         type="button"
-                        className={styles.iconBtn}
+                        className={styles.pinBtn}
                         onClick={openMyLetterDetail}
                         title="내가 보낸 편지 보기"
                       >
-                        📖
+                        <FaBookmark />
                       </button>
                       <button
                         type="button"
-                        className={styles.iconBtn}
+                        className={styles.pinBtn}
                         onClick={moveToMyLetter}
                         title="내 편지로 이동"
                       >
-                        📍
+                        <FaMapPin />
                       </button>
                     </>
                   )}
@@ -198,7 +198,6 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                 </div>
 
                 <div className={styles.plateWrap}>
-                  {/* left/right deco -> 스티커 이미지 */}
                   <img
                     className={styles.plateStickerLeft}
                     src="/img/sticker/heart-pink-glitter-loveya.png"
@@ -225,9 +224,6 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                   </div>
                 </div>
               </header>
-
-              {/* ✅ (2) header 아래 border 구분선 */}
-              <div className={styles.headerDivider} />
 
               {/* 스크롤 영역(그리드) */}
               <div ref={scrollRef} className={styles.boardScroll}>
@@ -259,14 +255,12 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                           ].join(' ')}
                           style={
                             {
-                              // 기본 회전
                               ['--rot' as any]: `${rot}deg`,
                             } as React.CSSProperties
                           }
                           onClick={() => openLetterDetail(l.id)}
                           title="편지 보기"
                         >
-                          {/* (3) “종이가 들린 느낌”을 위해 위에 종이 레이어가 있음 */}
                           <span className={styles.paperLift} aria-hidden />
 
                           {stickerDef && (
