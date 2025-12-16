@@ -1,14 +1,49 @@
-.overlay {
-  all: unset; /* button 기본 스타일 제거 */
+/* dialog 클래스가 overlayDialog로 쓰이니까 기존 overlay 대신 이걸로 맞춰줘 */
+.overlayDialog {
   position: fixed;
   inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.35);
 }
 
+/* note 안에 붙는 teaser sticker */
+.noteSticker {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 0 #000);
+}
+
+/* 오른쪽 패널 sticker section */
+.stickerBlock {
+  padding: 8px;
+  border-bottom: 2px dashed rgba(0, 0, 0, 0.35);
+}
+
+.blockLabel {
+  font-weight: 900;
+  font-size: 11px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.blockHint {
+  margin-top: 6px;
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+
 .window {
-  width: min(980px, 96vw);
+  width: min(1040px, 96vw);
   border: 3px solid #000;
   background: #fff;
   box-shadow: 8px 8px 0 #000;
@@ -18,7 +53,7 @@
 .titleBar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 6px 10px;
   background: linear-gradient(90deg, #9ad7ff, #e8fbff);
   border-bottom: 2px solid #000;
@@ -27,22 +62,38 @@
   letter-spacing: 0.06em;
 }
 
+.star {
+  font-size: 14px;
+}
+
+.title {
+  font-size: 13px;
+}
+
 .dim {
   opacity: 0.75;
   font-weight: 700;
   text-transform: none;
   letter-spacing: 0;
+  margin-left: 6px;
 }
 
 .closeBtn {
   margin-left: auto;
+  display: grid;
+  place-items: center;
   border: 2px solid #000;
   background: #ffd1e8;
   font-weight: 900;
   width: 34px;
-  height: 24px;
+  height: 26px;
   cursor: pointer;
   box-shadow: 2px 2px 0 #000;
+}
+
+.closeBtn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
 }
 
 .body {
@@ -61,6 +112,7 @@
   border: 2px solid #000;
   background: #fff;
   box-shadow: 4px 4px 0 #000;
+  min-width: 0;
 }
 
 .paneTitle {
@@ -70,89 +122,40 @@
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.corkBoard {
-  height: 420px;
-  position: relative;
-  border-top: 0;
-  background-image: url('/img/wallpaper/cork.jpeg');
-  background-size: cover;
-  background-position: center;
-  cursor: crosshair;
-  overflow: hidden;
+.paneBottom {
+  padding: 10px;
+  background: #fffdf8;
+  border-top: 2px solid #000;
 }
 
-.note {
-  position: absolute;
-  width: 190px;
-  height: 150px;
-  border: 2px solid #000;
-  background: #fff7a8;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
-  cursor: grab;
-  padding: 10px 10px 8px;
-  text-align: left;
-}
-
-.pin {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  transform: translateX(-50%);
-  background: radial-gradient(circle at 30% 30%, #fff, #ff4b4b 60%, #b30000);
-  border: 2px solid #000;
-  border-radius: 999px;
-}
-
-.noteTitle {
-  font-weight: 900;
-  font-size: 12px;
-  text-transform: uppercase;
-  margin-top: 6px;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.45);
-  padding-bottom: 4px;
-}
-
-.noteHint {
-  margin-top: 8px;
-  font-size: 10px;
-  opacity: 0.75;
-}
-
-.miniControls {
-  padding: 8px;
+.section {
+  padding: 10px;
   border-top: 2px solid #000;
   background: #fffdf8;
 }
 
-.sliderRow {
-  display: grid;
-  grid-template-columns: 46px 1fr 64px;
-  gap: 8px;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 800;
-  margin-bottom: 6px;
+.section:first-of-type {
+  border-top: 0;
 }
 
-.sliderRow input[type='range'] {
-  width: 100%;
-}
-
-.mono {
-  font-family: Verdana, Tahoma, monospace;
+.sectionTitle {
   font-weight: 900;
-  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  margin-bottom: 8px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 8px;
+  margin-bottom: 10px;
 }
 
 .field span {
@@ -160,38 +163,91 @@
   font-size: 11px;
 }
 
+.field input,
+.field select,
 .field textarea {
   border: 2px solid #000;
-  background: #fffdf8;
+  background: #fff;
   padding: 8px;
   font-size: 12px;
-  line-height: 1.4;
+}
+
+.field textarea {
+  background: #fffdf8;
+  line-height: 1.45;
   resize: vertical;
-  min-height: 240px;
+  min-height: 220px;
+}
+
+.fieldInline {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fieldInline select {
+  border: 2px solid #000;
+  padding: 6px 8px;
+  background: #fff;
+}
+
+.previewLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px dashed #000;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.previewBadge {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border: 2px solid #000;
+  background: #fff3b0;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.previewText {
+  font-weight: 900;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .checkRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 8px 8px;
   font-size: 12px;
   font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.checkRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .errorBox {
-  margin: 0 8px 8px;
   border: 2px solid #000;
   background: #ffe0e0;
   padding: 8px;
   font-weight: 900;
   font-size: 11px;
+  margin-bottom: 10px;
 }
 
 .btnRow {
   display: flex;
   gap: 8px;
-  padding: 0 8px 8px;
 }
 
 .btnGhost {
@@ -205,6 +261,10 @@
 
 .btnPrimary {
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
   border: 2px solid #000;
   background: linear-gradient(180deg, #ffeafc, #ffb7f5 50%, #ffdffb 100%);
   font-weight: 900;
@@ -213,14 +273,22 @@
   box-shadow: 2px 2px 0 #000;
 }
 
+.btnGhost:hover,
+.btnPrimary:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
 .btnGhost:disabled,
 .btnPrimary:disabled {
   opacity: 0.6;
   cursor: default;
+  transform: none;
+  box-shadow: 2px 2px 0 #000;
 }
 
 .footerHint {
-  padding: 0 8px 10px;
+  margin-top: 10px;
   font-size: 11px;
-  opacity: 0.8;
+  opacity: 0.85;
 }

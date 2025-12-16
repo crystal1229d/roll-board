@@ -1,0 +1,62 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr 290px;
+  gap: 12px;
+  align-items: start;
+}
+
+.paperCol {
+  min-width: 0;
+}
+
+.sideCol {
+  display: grid;
+  gap: 10px;
+}
+
+.panel {
+  border: 2px solid #000;
+  background: #fff;
+  box-shadow: 3px 3px 0 #000;
+}
+
+.panelTitle {
+  padding: 8px 10px;
+  border-bottom: 2px solid #000;
+  background: #fff3b0;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  border: 2px solid #000;
+  background: linear-gradient(180deg, #ffeafc, #ffb7f5 50%, #ffdffb 100%);
+  font-weight: 900;
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.loading {
+  padding: 10px;
+  font-weight: 800;
+}
+
+.error {
+  padding: 10px;
+  border: 2px solid #000;
+  background: #ffe0e0;
+  font-weight: 900;
+}

@@ -1,0 +1,33 @@
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.thumb {
+  width: 42px;
+  height: 42px;
+  border: 2px solid #000;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #000;
+  display: grid;
+  place-items: center;
+}
+
+.thumb img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.thumb:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.selected {
+  outline: 3px solid #ff4db8;
+}

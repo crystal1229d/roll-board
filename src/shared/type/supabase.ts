@@ -106,6 +106,7 @@ export type Database = {
           id: string;
           letter_id: string;
           note_color: string | null;
+          text_color: string | null;
           updated_at: string | null;
         };
         Insert: {
@@ -115,6 +116,7 @@ export type Database = {
           id?: string;
           letter_id: string;
           note_color?: string | null;
+          text_color?: string | null;
           updated_at?: string | null;
         };
         Update: {
@@ -124,13 +126,14 @@ export type Database = {
           id?: string;
           letter_id?: string;
           note_color?: string | null;
+          text_color?: string | null;
           updated_at?: string | null;
         };
         Relationships: [
           {
             foreignKeyName: 'letter_styles_letter_id_fkey';
             columns: ['letter_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'letters';
             referencedColumns: ['id'];
           },
@@ -422,7 +425,7 @@ export type Database = {
   };
 };
 
-export type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
 

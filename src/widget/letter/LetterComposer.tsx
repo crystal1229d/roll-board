@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLetterComposer } from '@/feature/letter/hook/useLetterComposer';
+import {
+  DEFAULT_STICKER_ID,
+  type StickerTypeId,
+  findStickerDef,
+  StickerPalette,
+} from '@/entity/sticker';
 import styles from './LetterComposer.module.css';
 
 type Props = {
@@ -26,11 +32,16 @@ export default function LetterComposer({ paperId, paperTitle, onClose, onSaved }
   const [rot, setRot] = useState(() => Math.floor(Math.random() * 11) - 5);
   const [scale, setScale] = useState(1);
 
+  // ✅ 대표 스티커(보드에서 보이는 teaser 스티커)
+  const [teaserStickerType, setTeaserStickerType] = useState<StickerTypeId>(DEFAULT_STICKER_ID);
+
   const teaserTitle = useMemo(() => {
     const first = content.trim().split('\n')[0] ?? '';
     if (first.length === 0) return 'LETTER';
     return first.length > 14 ? `${first.slice(0, 14)}…` : first;
   }, [content]);
+
+  const teaserStickerDef = useMemo(() => findStickerDef(teaserStickerType), [teaserStickerType]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -71,6 +82,9 @@ export default function LetterComposer({ paperId, paperTitle, onClose, onSaved }
       teaserY: y,
       teaserRotation: rot,
       teaserScale: scale,
+
+      // ✅ DB letters.teaser_sticker_type로 저장
+      teaserStickerType,
     });
 
     if (!ok) return;
@@ -79,13 +93,11 @@ export default function LetterComposer({ paperId, paperTitle, onClose, onSaved }
   };
 
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <dialog
       open
       className={styles.overlayDialog}
       aria-label="Letter composer dialog"
       onMouseDown={(e) => {
-        // ✅ backdrop click 닫기 (dialog 바깥 클릭)
         if (e.target === e.currentTarget) onClose();
       }}
       onCancel={(e) => {
@@ -114,18 +126,28 @@ export default function LetterComposer({ paperId, paperTitle, onClose, onSaved }
                 onClick={handleBoardClick}
                 aria-label="Cork board. Click to move the post-it."
               >
-                {/* ✅ button 중첩 방지: note는 div로 */}
                 <div
                   className={styles.note}
                   style={{
                     left: `${x}%`,
                     top: `${y}%`,
                     transform: `translate(-50%, -30%) rotate(${rot}deg) scale(${scale})`,
-                    pointerEvents: 'none', // ✅ 클릭은 전부 보드가 받음
+                    pointerEvents: 'none',
                   }}
                   aria-hidden="true"
                 >
                   <div className={styles.pin} />
+
+                  {/* ✅ 대표 스티커 미리보기 */}
+                  {teaserStickerDef && (
+                    <img
+                      className={styles.noteSticker}
+                      src={teaserStickerDef.src}
+                      alt={teaserStickerDef.label}
+                      draggable={false}
+                    />
+                  )}
+
                   <div className={styles.noteTitle}>{teaserTitle}</div>
                   <div className={styles.noteHint}>click board to move</div>
                 </div>
@@ -161,6 +183,13 @@ export default function LetterComposer({ paperId, paperTitle, onClose, onSaved }
             {/* RIGHT */}
             <div className={styles.rightPane}>
               <div className={styles.paneTitle}>★ Letter Editor</div>
+
+              {/* ✅ Sticker palette */}
+              <div className={styles.stickerBlock}>
+                <div className={styles.blockLabel}>Teaser Sticker</div>
+                <StickerPalette value={teaserStickerType} onChange={setTeaserStickerType} />
+                <div className={styles.blockHint}>보드에서 편지 대표 스티커로 보여져요.</div>
+              </div>
 
               <label className={styles.field}>
                 <span>Content</span>

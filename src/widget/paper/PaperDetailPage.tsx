@@ -3,7 +3,14 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { usePaperDetail } from '@/feature/paper/hook/usePaperDetail';
 import { useDesktopStore } from '@/feature/desktop/model/useDesktopStore';
-import { findStickerDef } from '@/entity/sticker/model/catalog';
+
+import {
+  findStickerDef,
+  DEFAULT_STICKER_ID,
+  isStickerTypeId,
+  type StickerTypeId,
+} from '@/entity/sticker';
+
 import { FaPenNib, FaBookmark, FaMapPin, FaLink } from 'react-icons/fa';
 import styles from './PaperDetailPage.module.css';
 
@@ -25,6 +32,12 @@ const makeRng = (seed: number) => {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+};
+
+// ✅ DB(string|null) -> StickerTypeId 로 안전 변환
+const toStickerId = (raw: string | null | undefined): StickerTypeId => {
+  if (raw && isStickerTypeId(raw)) return raw;
+  return DEFAULT_STICKER_ID;
 };
 
 export default function PaperDetailPage({ paperSlug }: Props) {
@@ -240,8 +253,10 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                       const isHighlight = highlightId === l.id;
                       const rot = rotationMap.get(l.id) ?? 0;
 
+                      // ✅ teaser_sticker_type 안전 변환
+                      const stickerId = toStickerId(l.teaser_sticker_type);
                       const stickerDef =
-                        findStickerDef(l.teaser_sticker_type) ?? findStickerDef('smile');
+                        findStickerDef(stickerId) ?? findStickerDef(DEFAULT_STICKER_ID);
 
                       return (
                         <button
@@ -253,11 +268,7 @@ export default function PaperDetailPage({ paperSlug }: Props) {
                             isMine ? styles.myNote : '',
                             isHighlight ? styles.flash : '',
                           ].join(' ')}
-                          style={
-                            {
-                              ['--rot' as any]: `${rot}deg`,
-                            } as React.CSSProperties
-                          }
+                          style={{ ['--rot' as any]: `${rot}deg` } as React.CSSProperties}
                           onClick={() => openLetterDetail(l.id)}
                           title="편지 보기"
                         >
