@@ -89,9 +89,7 @@ export default function PaperWindow() {
                       </button>
                       <span className={styles.badge}>PROFILE</span>
                     </div>
-                    <p className={styles.intro}>
-                      {item.intro || '아직 자기소개가 없어요. 다정한 한 줄을 남겨볼까요? ✶'}
-                    </p>
+                    <p className={styles.intro}>{item.intro || '-'}</p>
                   </div>
                 </div>
 

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { findStickerDef, DEFAULT_STICKER_ID } from '@/entity/sticker';
 import type { StickerTypeId } from '@/entity/sticker';
 import type { LetterStickerDraft, LetterStyleDraft } from '@/entity/letter/type';
+import { TeaserCard } from './TeaserCard';
 
 type TeaserPreview = {
   title: string;
@@ -26,82 +27,6 @@ type Props = {
 };
 
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
-
-function TeaserCard({
-  title,
-  writerName,
-  stickerType,
-  rot = 0,
-}: {
-  title: string;
-  writerName: string;
-  stickerType: StickerTypeId | null;
-  rot?: number;
-}) {
-  const id = (stickerType ?? DEFAULT_STICKER_ID) as StickerTypeId;
-  const def = findStickerDef(id);
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: 240,
-        height: 96,
-        border: '2px solid #000',
-        background: 'rgba(255,255,255,0.88)',
-        padding: '14px 10px 10px',
-        boxShadow: '3px 3px 0 rgba(0,0,0,0.35)',
-        transform: `rotate(${rot}deg)`,
-        transformOrigin: '45% 20%',
-      }}
-    >
-      <span
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0) 45%)',
-          opacity: 0.5,
-        }}
-      />
-
-      {def && (
-        <img
-          src={def.src}
-          alt={def.label}
-          draggable={false}
-          style={{
-            position: 'absolute',
-            top: -18,
-            left: -18,
-            width: 46,
-            height: 46,
-            objectFit: 'contain',
-            pointerEvents: 'none',
-            filter: 'drop-shadow(2px 2px 0 #000)',
-          }}
-        />
-      )}
-
-      <div
-        style={{
-          fontWeight: 900,
-          fontSize: 12,
-          marginBottom: 6,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {title || 'LETTER'}
-      </div>
-      <div style={{ fontWeight: 800, fontSize: 11 }}>{writerName}</div>
-    </div>
-  );
-}
 
 export function LetterPaper({
   content,
@@ -229,10 +154,11 @@ export function LetterPaper({
           }}
         >
           <TeaserCard
+            variant="badge"
             title={teaserPreview.title}
             writerName={teaserPreview.writerName}
             stickerType={teaserPreview.stickerType}
-            rot={teaserPreview.rot ?? -1.5}
+            rot={(teaserPreview.rot ?? -1.5) + 1.2}
           />
         </div>
       )}
@@ -268,32 +194,14 @@ export function LetterPaper({
                 placeItems: 'center',
                 zIndex: 40,
                 pointerEvents: 'none',
-                animation: 'rpIntroFade 850ms ease forwards',
               }}
             >
-              <div
-                style={{ transformOrigin: '50% 0%', animation: 'rpIntroOpen 850ms ease forwards' }}
-              >
-                <TeaserCard
-                  title={teaserPreview.title}
-                  writerName={teaserPreview.writerName}
-                  stickerType={teaserPreview.stickerType}
-                  rot={(teaserPreview.rot ?? -1.5) + 1.2}
-                />
-              </div>
-
-              <style>{`
-                @keyframes rpIntroOpen {
-                  0%   { transform: translateY(8px) scale(1.02); }
-                  55%  { transform: translateY(-6px) scale(1.02); }
-                  100% { transform: translateY(-26px) scale(0.98); }
-                }
-                @keyframes rpIntroFade {
-                  0%   { opacity: 1; }
-                  70%  { opacity: 1; }
-                  100% { opacity: 0; }
-                }
-              `}</style>
+              <TeaserCard
+                title={teaserPreview.title}
+                writerName={teaserPreview.writerName}
+                stickerType={teaserPreview.stickerType}
+                rot={(teaserPreview.rot ?? -1.5) + 1.2}
+              />
             </div>
           )}
 

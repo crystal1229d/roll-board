@@ -1,0 +1,93 @@
+/* 미국 올드웹 + Win95-ish (GeoCities 감성) */
+:root {
+  --ow-black: #000;
+  --ow-gray0: #ffffff;
+  --ow-gray1: #f2f2f2;
+  --ow-gray2: #d6d6d6;
+  --ow-gray3: #9a9a9a;
+  --ow-blue: #0000ee; /* classic link blue */
+  --ow-magenta: #ff2bd6; /* 살짝 과한 네온 */
+  --ow-cyan: #00e5ff;
+}
+
+.card {
+  position: relative;
+  width: 240px;
+  height: 96px;
+
+  background: linear-gradient(180deg, #ffffff, #f1f1ff 55%, #e7e7e7);
+  border: 2px solid var(--ow-black);
+
+  /* Win95 bevel */
+  box-shadow:
+    inset 2px 2px 0 var(--ow-gray0),
+    inset -2px -2px 0 var(--ow-gray3),
+    3px 3px 0 rgba(0,0,0,0.35);
+
+  padding: 12px 10px 10px 10px;
+  transform-origin: 45% 20%;
+  image-rendering: pixelated;
+}
+
+.badge {
+  position: relative;
+  width: 200px;
+  height: 76px;
+  background: linear-gradient(180deg, #fff, #f3f3ff);
+  border: 2px solid var(--ow-black);
+  box-shadow:
+    inset 2px 2px 0 var(--ow-gray0),
+    inset -2px -2px 0 var(--ow-gray3),
+    2px 2px 0 rgba(0,0,0,0.3);
+  padding: 10px 10px 8px;
+  transform-origin: 45% 20%;
+}
+
+.gloss {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0) 55%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0,0,0,0.04),
+      rgba(0,0,0,0.04) 2px,
+      rgba(255,255,255,0.02) 2px,
+      rgba(255,255,255,0.02) 4px
+    );
+  opacity: 0.55;
+}
+
+.sticker {
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(2px 2px 0 #000);
+  image-rendering: auto;
+}
+
+.title {
+  font-weight: 900;
+  font-size: 12px;
+  margin-bottom: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.writer {
+  font-weight: 800;
+  font-size: 11px;
+
+  /* 살짝 “웹 안전 폰트” 느낌 */
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  opacity: 0.95;
+}

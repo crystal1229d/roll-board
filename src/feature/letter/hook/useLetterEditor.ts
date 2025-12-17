@@ -139,7 +139,7 @@ export function useLetterEditor(letterId: string) {
 
       try {
         // 1) letters
-        const { error: e1 } = await supabase
+        const { data: updated, error: e1 } = await supabase
           .from('letters')
           .update({
             content: draft.content,
@@ -148,9 +148,14 @@ export function useLetterEditor(letterId: string) {
             is_anonymous: draft.isAnonymous,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', letterId);
+          .eq('id', letterId)
+          .select('id, content, teaser_title, teaser_sticker_type, is_anonymous, updated_at')
+          .maybeSingle();
 
         if (e1) throw e1;
+        if (!updated) throw new Error('업데이트 대상이 없어요 (권한/RLS/조건 확인 필요)');
+
+        console.log('[letters updated]', updated);
 
         // 2) styles
         const { error: e2 } = await supabase.from('letter_styles').upsert(
@@ -225,7 +230,6 @@ export function useLetterEditor(letterId: string) {
     letter,
     canEdit,
 
-    // server snapshot (초기값 용)
     style,
     stickers,
 
